@@ -18,7 +18,7 @@
         "symfony/validator": "^6.0"
     },
     "require-dev": {
-        "monolog/monolog": "^2.3",
+        "monolog/monolog": "^2.4",
         "guzzlehttp/guzzle": "^7.4",
         "phpunit/phpunit": "^9.5",
 
