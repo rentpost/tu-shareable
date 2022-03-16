@@ -17,6 +17,7 @@ class Landlord
 
     protected ?int $id = null;
 
+    #[Assert\NotBlank]
     protected Email $emailAddress;
 
     #[Assert\NotBlank]
@@ -27,10 +28,13 @@ class Landlord
     #[Assert\Length(min: 2, max: 50)]
     protected string $lastName;
 
+    #[Assert\NotBlank]
     protected Phone $phone;
 
+    #[Assert\Length(min: 2, max: 50)]
     protected string $businessName;
 
+    #[Assert\NotBlank]
     protected Address $businessAddress;
 
     #[Assert\IsTrue(message: 'Terms and conditions need to be accepted.')]
