@@ -19,7 +19,7 @@ class ValidationException extends \RuntimeException
     {
         $this->violations = $violations;
 
-        parent::__construct((string) $violations);
+        parent::__construct((string)$violations);
     }
 
 

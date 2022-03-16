@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Email
 {
 
-    use ValidateTrait;
+    use Validate;
 
 
     #[Assert\NotBlank]
@@ -20,9 +20,8 @@ class Email
     protected string $address;
 
 
-    public function __construct(
-        string $address,
-    ) {
+    public function __construct(string $address)
+    {
         $this->address = $address;
 
         $this->validate();

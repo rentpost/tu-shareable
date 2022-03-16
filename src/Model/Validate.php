@@ -7,10 +7,10 @@ namespace Rentpost\TUShareable\Model;
 use Rentpost\TUShareable\ValidationException;
 use Symfony\Component\Validator\Validation;
 
-trait ValidateTrait
+trait Validate
 {
 
-    protected function validate()
+    protected function validate(): void
     {
         $valBuilder = Validation::createValidatorBuilder();
         $validator = $valBuilder->enableAnnotationMapping()->getValidator();

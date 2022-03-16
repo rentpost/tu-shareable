@@ -12,17 +12,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SocialSecurityNumber
 {
 
-    use ValidateTrait;
+    use Validate;
 
 
     #[Assert\NotBlank]
-    #[Assert\Regex("/^[0-9]{9}$/", "The value is not a valid social security number.")]
+    #[Assert\Regex('/^[0-9]{9}$/', 'The value is not a valid social security number.')]
     protected string $ssn;
 
 
-    public function __construct(
-        string $ssn,
-    ) {
+    public function __construct(string $ssn)
+    {
         $this->ssn = $ssn;
 
         $this->validate();

@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Landlord
 {
 
-    use ValidateTrait;
+    use Validate;
 
 
     protected ?int $id = null;
