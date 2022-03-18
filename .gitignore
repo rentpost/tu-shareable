@@ -1,3 +1,5 @@
+debug/config
+debug/log.txt
 vendor/
 .phpunit.result.cache
 composer.lock
