@@ -8,6 +8,7 @@ use Psr\Http\Client\ClientInterface as HttpClient;
 use Psr\Http\Message\RequestFactoryInterface as HttpRequestFactory;
 use Psr\Log\LoggerInterface;
 use Rentpost\TUShareable\Model\Bundle;
+use Rentpost\TUShareable\Model\Landlord;
 
 /**
  * Client library for TransUnion - ShareAble for Rentals API.
@@ -22,6 +23,7 @@ class Client implements ClientInterface
         protected LoggerInterface $logger,
         protected HttpRequestFactory $requestFactory,
         protected HttpClient $httpClient,
+        protected ModelFactory $modelFactory,
         protected string $baseUrl,
         protected string $partnerId,
         protected string $clientId,
@@ -41,10 +43,61 @@ class Client implements ClientInterface
         $list = [];
 
         foreach ($rows as $row) {
-            $list[] = new Bundle($row['bundleId'], $row['name']);
+            $list[] = $this->modelFactory->make(Bundle::class, $row);
         }
 
         return $list;
+    }
+
+
+    /*
+     * Landlords
+     */
+
+
+    public function getLandlord(int $id): Landlord
+    {
+        $response = $this->request('GET', "Landlords/$id");
+
+        $data = $this->decodeJson($response);
+
+        return $this->modelFactory->make(Landlord::class, $data);
+    }
+
+
+    public function createLandlord(Landlord $landlord): void
+    {
+        $response = $this->requestJson('POST', 'Landlords', $landlord->toArray());
+
+        $responseData = $this->decodeJson($response);
+
+        $landlord->setLandlordId($responseData['landlordId']);
+    }
+
+
+    public function updateLandlord(Landlord $landlord): void
+    {
+        $this->requestJson('PUT', 'Landlords', $landlord->toArray());
+    }
+
+
+    /*
+     * Private functions
+     */
+
+
+    /**
+     * @param string[] $data
+     */
+    protected function encodeJson(array $data): string
+    {
+        $encoded = json_encode($data);
+
+        if (json_last_error() !== \JSON_ERROR_NONE) {
+            throw new ClientException('Unable to encode JSON: ' . json_last_error_msg());
+        }
+
+        return $encoded;
     }
 
 
@@ -62,15 +115,43 @@ class Client implements ClientInterface
 
     protected function fetchToken(): void
     {
-        $data = json_encode(['clientId' => $this->clientId, 'apiKey' => $this->apiKey]);
-        $headers = ['Content-Type' => 'application/json'];
-        $response = $this->request('POST', 'Tokens', $data, $headers, false);
+        $data = ['clientId' => $this->clientId, 'apiKey' => $this->apiKey];
+        $response = $this->requestJson('POST', 'Tokens', $data, [], false);
 
         $responseData = $this->decodeJson($response);
         $this->authToken = $responseData['token'];
     }
 
 
+    /**
+     * @param string[] $data
+     * @param string[] $headers
+     */
+    protected function requestJson(
+        string $method,
+        string $resource,
+        array $data,
+        array $headers = [],
+        bool $fetchToken = true
+    ): string
+    {
+        $headers['Content-Type'] = 'application/json';
+
+        $json = $this->encodeJson($data);
+
+        return $this->request(
+            $method,
+            $resource,
+            $json,
+            $headers,
+            $fetchToken
+        );
+    }
+
+
+    /**
+     * @param string[] $headers
+     */
     protected function request(
         string $method,
         string $resource,

@@ -11,12 +11,15 @@ function getShareableClient()
 
     $httpClient = new GuzzleHttp\Client();
 
+    $modelFactory = new Rentpost\TUShareable\ModelFactory();
+
     $config = parse_ini_file(__DIR__ . '/config');
 
     return new Rentpost\TUShareable\Client(
         $logger,
         $requestFactory,
         $httpClient,
+        $modelFactory,
         $config['url'],
         $config['partnerId'],
         $config['clientId'],
