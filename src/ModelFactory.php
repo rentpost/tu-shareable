@@ -9,8 +9,11 @@ use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\Email;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Money;
+use Rentpost\TUShareable\Model\Person;
 use Rentpost\TUShareable\Model\Phone;
 use Rentpost\TUShareable\Model\Property;
+use Rentpost\TUShareable\Model\Renter;
+use Rentpost\TUShareable\Model\SocialSecurityNumber;
 
 class ModelFactory
 {
@@ -25,6 +28,7 @@ class ModelFactory
             Bundle::class => $this->makeBundle($data),
             Landlord::class => $this->makeLandlord($data),
             Property::class => $this->makeProperty($data),
+            Renter::class => $this->makeRenter($data),
             default => null
         };
 
@@ -87,6 +91,32 @@ class ModelFactory
     /**
      * @param string[] $data
      */
+    protected function makePerson(array $data): Person
+    {
+        $ssn = $data['socialSecurityNumber'] ?? null;
+        $dob = $data['dateOfBirth'] ?? null;
+
+        $person = new Person(
+            new Email($data['emailAddress']),
+            $data['firstName'],
+            $data['middleName'] ?? null,
+            $data['lastName'],
+            new Phone($data['phoneNumber'], $data['phoneType']),
+            $ssn ? new SocialSecurityNumber($ssn) : null,
+            $dob ? new Date($dob) : null,
+            $this->makeAddress($data['homeAddress']),
+            boolval($data['acceptedTermsAndConditions'])
+        );
+
+        $person->setPersonId($data['personId'] ?? null);
+
+        return $person;
+    }
+
+
+    /**
+     * @param string[] $data
+     */
     protected function makeProperty(array $data): Property
     {
         $property = new Property(
@@ -103,5 +133,27 @@ class ModelFactory
         $property->setIsActive(boolval($data['isActive']));
 
         return $property;
+    }
+
+
+    /**
+     * @param string[] $data
+     */
+    protected function makeRenter(array $data): Renter
+    {
+        $msex = $data['multiShareExpirationDate'] ?? null;
+
+        $renter = new Renter(
+            $this->makePerson($data['person']),
+            new Money((string)$data['income']),
+            $data['incomeFrequency'],
+            new Money((string)$data['otherIncome']),
+            $data['otherIncomeFrequency'],
+            new Money((string)$data['assets']),
+            $data['employmentStatus'],
+            $msex ? new Date($msex) : null
+        );
+
+        return $renter;
     }
 }

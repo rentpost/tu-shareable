@@ -34,11 +34,9 @@ class Person
     #[Assert\NotBlank]
     protected Phone $phone;
 
-    #[Assert\NotBlank]
-    protected SocialSecurityNumber $socialSecurityNumber;
+    protected ?SocialSecurityNumber $socialSecurityNumber;
 
-    #[Assert\NotBlank]
-    protected Date $dateOfBirth;
+    protected ?Date $dateOfBirth;
 
     #[Assert\NotBlank]
     protected Address $homeAddress;
@@ -53,8 +51,8 @@ class Person
         ?string $middleName,
         string $lastName,
         Phone $phone,
-        SocialSecurityNumber $socialSecurityNumber,
-        Date $dateOfBirth,
+        ?SocialSecurityNumber $socialSecurityNumber,
+        ?Date $dateOfBirth,
         Address $homeAddress,
         bool $acceptedTermsAndConditions
     ) {
@@ -108,13 +106,13 @@ class Person
     }
 
 
-    public function getSocialSecurityNumber(): SocialSecurityNumber
+    public function getSocialSecurityNumber(): ?SocialSecurityNumber
     {
         return $this->socialSecurityNumber;
     }
 
 
-    public function getDateOfBirth(): Date
+    public function getDateOfBirth(): ?Date
     {
         return $this->dateOfBirth;
     }
@@ -135,5 +133,36 @@ class Person
     public function setPersonId(?int $personId): void
     {
         $this->personId = $personId;
+    }
+
+
+    /**
+     * @return string[]
+     */
+    public function toArray(): array
+    {
+        $array = [];
+
+        if ($this->personId) {
+            $array['personId'] = $this->personId;
+        }
+
+        $array['emailAddress'] = $this->emailAddress->getAddress();
+        $array['firstName'] = $this->firstName;
+
+        if ($this->middleName) {
+            $array['middleName'] = $this->middleName;
+        }
+
+        $array['lastName'] = $this->lastName;
+
+        $array = array_merge($array, $this->phone->toArray());
+
+        $array['socialSecurityNumber'] = $this->socialSecurityNumber->getValue();
+        $array['dateOfBirth'] = $this->dateOfBirth->getValue();
+        $array['homeAddress'] = $this->homeAddress->toArray();
+        $array['acceptedTermsAndConditions'] = $this->acceptedTermsAndConditions;
+
+        return $array;
     }
 }

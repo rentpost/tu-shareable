@@ -65,6 +65,13 @@ class Renter
     }
 
 
+    // For convenience, id is stored in Person
+    public function getRenterId(): ?int
+    {
+        return $this->person->getPersonId();
+    }
+
+
     public function getPerson(): Person
     {
         return $this->person;
@@ -110,5 +117,34 @@ class Renter
     public function getMultiShareExpirationDate(): ?Date
     {
         return $this->multiShareExpirationDate;
+    }
+
+
+    // For convenience, id is stored in Person
+    public function setRenterId(?int $renterId): void
+    {
+        $this->person->setPersonId($renterId);
+    }
+
+
+    /**
+     * @return string[]
+     */
+    public function toArray(): array
+    {
+        $array = ['person' => $this->person->toArray()];
+
+        $array['income'] = $this->income->getValue();
+        $array['incomeFrequency'] = $this->incomeFrequency;
+        $array['otherIncome'] = $this->otherIncome->getValue();
+        $array['otherIncomeFrequency'] = $this->otherIncomeFrequency;
+        $array['assets'] = $this->assets->getValue();
+        $array['employmentStatus'] = $this->employmentStatus;
+
+        if ($this->multiShareExpirationDate) {
+            $array['multiShareExpirationDate'] = $this->multiShareExpirationDate->getValue();
+        }
+
+        return $array;
     }
 }

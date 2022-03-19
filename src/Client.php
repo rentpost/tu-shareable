@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Property;
+use Rentpost\TUShareable\Model\Renter;
 
 /**
  * Client library for TransUnion - ShareAble for Rentals API.
@@ -134,6 +135,37 @@ class Client implements ClientInterface
     public function updateProperty(int $landlordId, Property $property): void
     {
         $this->requestJson('PUT', "Landlords/$landlordId/Properties", $property->toArray());
+    }
+
+
+    /*
+     * Renters
+     */
+
+
+    public function getRenter(int $renterId): Renter
+    {
+        $response = $this->request('GET', "Renters/$renterId");
+
+        $data = $this->decodeJson($response);
+
+        return $this->modelFactory->make(Renter::class, $data);
+    }
+
+
+    public function createRenter(Renter $renter): void
+    {
+        $response = $this->requestJson('POST', 'Renters', $renter->toArray());
+
+        $responseData = $this->decodeJson($response);
+
+        $renter->setRenterId($responseData['renterId']);
+    }
+
+
+    public function updateRenter(Renter $renter): void
+    {
+        $this->requestJson('PUT', 'Renters', $renter->toArray());
     }
 
 
