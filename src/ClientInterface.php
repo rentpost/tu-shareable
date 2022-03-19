@@ -44,7 +44,7 @@ interface ClientInterface
     /**
      * @return Property[]
      */
-    public function getProperties(int $landlordId): array;
+    public function getProperties(int $landlordId, int $pageNumber = 1, int $pageSize = 10): array;
 
 
     public function createProperty(int $landlordId, Property $property): void;

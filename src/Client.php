@@ -100,9 +100,14 @@ class Client implements ClientInterface
     /**
      * @return Property[]
      */
-    public function getProperties(int $landlordId): array
+    public function getProperties(int $landlordId, int $pageNumber = 1, int $pageSize = 10): array
     {
-        $response = $this->request('GET', "Landlords/$landlordId/Properties");
+        $params = http_build_query([
+            'PageNumber' => $pageNumber,
+            'PageSize' => $pageSize,
+        ]);
+
+        $response = $this->request('GET', "Landlords/$landlordId/Properties?" . $params);
 
         $data = $this->decodeJson($response);
 
