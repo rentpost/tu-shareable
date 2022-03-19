@@ -15,5 +15,10 @@ class BundleTest extends TestCase
 
         $this->assertSame(123, $bundle->getBundleId());
         $this->assertSame('Name', $bundle->getName());
+
+        $this->assertSame([
+            'bundleId' => 123,
+            'name' => 'Name'
+        ], $bundle->toArray());
     }
 }

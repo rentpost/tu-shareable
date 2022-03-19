@@ -32,7 +32,7 @@ class Landlord
     protected Phone $phone;
 
     #[Assert\Length(min: 2, max: 50)]
-    protected string $businessName;
+    protected ?string $businessName;
 
     #[Assert\NotBlank]
     protected Address $businessAddress;
@@ -46,7 +46,7 @@ class Landlord
         string $firstName,
         string $lastName,
         Phone $phone,
-        string $businessName,
+        ?string $businessName,
         Address $businessAddress,
         bool $acceptedTermsAndConditions
     ) {
@@ -92,7 +92,7 @@ class Landlord
     }
 
 
-    public function getBusinessName(): string
+    public function getBusinessName(): ?string
     {
         return $this->businessName;
     }
@@ -113,5 +113,34 @@ class Landlord
     public function setLandlordId(?int $landlordId): void
     {
         $this->landlordId = $landlordId;
+    }
+
+
+    /**
+     * @return string[]
+     */
+    public function toArray(): array
+    {
+        $array = [];
+
+        if ($this->landlordId) {
+            $array['landlordId'] = $this->landlordId;
+        }
+
+        $array['emailAddress'] = $this->emailAddress->getAddress();
+        $array['firstName'] = $this->firstName;
+        $array['lastName'] = $this->lastName;
+
+        $array = array_merge($array, $this->phone->toArray());
+
+        if ($this->businessName) {
+            $array['businessName'] = $this->businessName;
+        }
+
+        $array['businessAddress'] = $this->businessAddress->toArray();
+
+        $array['acceptedTermsAndConditions'] = $this->acceptedTermsAndConditions;
+
+        return $array;
     }
 }

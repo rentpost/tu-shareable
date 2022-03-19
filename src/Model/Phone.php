@@ -43,4 +43,16 @@ class Phone
     {
         return $this->type;
     }
+
+
+    /**
+     * @return string[]
+     */
+    public function toArray(): array
+    {
+        return [
+            'phoneNumber' => $this->number,
+            'phoneType' => $this->type,
+        ];
+    }
 }

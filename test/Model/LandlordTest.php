@@ -26,6 +26,25 @@ class LandlordTest extends TestCase
         $this->assertInstanceOf(Address::class, $landlord->getBusinessAddress());
         $this->assertInstanceOf(Email::class, $landlord->getEmail());
         $this->assertInstanceOf(Phone::class, $landlord->getPhone());
+
+        $this->assertSame([
+            'landlordId' => 123,
+            'emailAddress' => 'test@example.com',
+            'firstName' => 'First',
+            'lastName' => 'Last',
+            'phoneNumber' => '0123456789',
+            'phoneType' => 'Home',
+            'businessName' => 'Business',
+            'businessAddress' => [
+                'addressLine1' => 'Streetname',
+                'addressLine2' => 'Apartment',
+                'locality' => 'Los Angeles',
+                'region' => 'CA',
+                'postalCode' => '12345',
+                'country' => 'US',
+            ],
+            'acceptedTermsAndConditions' => true,
+        ], $landlord->toArray());
     }
 
 

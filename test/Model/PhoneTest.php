@@ -15,6 +15,11 @@ class PhoneTest extends TestCase
 
         $this->assertSame('0123456789', $phone->getNumber());
         $this->assertSame('Home', $phone->getType());
+
+        $this->assertSame([
+            'phoneNumber' => '0123456789',
+            'phoneType' => 'Home',
+        ], $phone->toArray());
     }
 
 

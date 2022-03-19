@@ -20,13 +20,13 @@ class Address
     protected string $addressLine1;
 
     #[Assert\Length(max: 100)]
-    protected string $addressLine2;
+    protected ?string $addressLine2;
 
     #[Assert\Length(max: 100)]
-    protected string $addressLine3;
+    protected ?string $addressLine3;
 
     #[Assert\Length(max: 100)]
-    protected string $addressLine4;
+    protected ?string $addressLine4;
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 27)]
@@ -110,9 +110,9 @@ class Address
 
     public function __construct(
         string $addressLine1,
-        string $addressLine2,
-        string $addressLine3,
-        string $addressLine4,
+        ?string $addressLine2,
+        ?string $addressLine3,
+        ?string $addressLine4,
         string $locality,
         string $region,
         string $postalCode,
@@ -137,19 +137,19 @@ class Address
     }
 
 
-    public function getAddressLine2(): string
+    public function getAddressLine2(): ?string
     {
         return $this->addressLine2;
     }
 
 
-    public function getAddressLine3(): string
+    public function getAddressLine3(): ?string
     {
         return $this->addressLine3;
     }
 
 
-    public function getAddressLine4(): string
+    public function getAddressLine4(): ?string
     {
         return $this->addressLine4;
     }
@@ -176,5 +176,38 @@ class Address
     public function getCountry(): string
     {
         return $this->country;
+    }
+
+
+    /**
+     * @return string[]
+     */
+    public function toArray(): array
+    {
+        $array = [
+            'addressLine1' => $this->addressLine1,
+        ];
+
+        if ($this->addressLine2) {
+            $array['addressLine2'] = $this->addressLine2;
+        }
+
+        if ($this->addressLine3) {
+            $array['addressLine3'] = $this->addressLine3;
+        }
+
+        if ($this->addressLine4) {
+            $array['addressLine4'] = $this->addressLine4;
+        }
+
+        $array = array_merge($array, [
+            'addressLine1' => $this->addressLine1,
+            'locality' => $this->locality,
+            'region' => $this->region,
+            'postalCode' => $this->postalCode,
+            'country' => $this->country,
+        ]);
+
+        return $array;
     }
 }

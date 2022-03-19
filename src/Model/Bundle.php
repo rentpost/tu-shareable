@@ -41,4 +41,16 @@ class Bundle
     {
         return $this->name;
     }
+
+
+    /**
+     * @return string[]
+     */
+    public function toArray(): array
+    {
+        return [
+            'bundleId' => $this->bundleId,
+            'name' => $this->name,
+        ];
+    }
 }

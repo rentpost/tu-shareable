@@ -21,6 +21,17 @@ class AddressTest extends TestCase
         $this->assertSame('FL', $addr->getRegion());
         $this->assertSame('12345', $addr->getPostalCode());
         $this->assertSame('US', $addr->getCountry());
+
+        $this->assertSame([
+            'addressLine1' => 'Street 1',
+            'addressLine2' => 'Suburb 2',
+            'addressLine3' => 'Apartment 3',
+            'addressLine4' => 'Room 4',
+            'locality' => 'Miami',
+            'region' => 'FL',
+            'postalCode' => '12345',
+            'country' => 'US'
+        ], $addr->toArray());
     }
 
 
