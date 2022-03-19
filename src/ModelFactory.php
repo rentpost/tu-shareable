@@ -143,7 +143,7 @@ class ModelFactory
     {
         $msex = $data['multiShareExpirationDate'] ?? null;
 
-        $renter = new Renter(
+        return new Renter(
             $this->makePerson($data['person']),
             new Money((string)$data['income']),
             $data['incomeFrequency'],
@@ -153,7 +153,5 @@ class ModelFactory
             $data['employmentStatus'],
             $msex ? new Date($msex) : null
         );
-
-        return $renter;
     }
 }

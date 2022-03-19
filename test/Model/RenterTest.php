@@ -32,6 +32,35 @@ class RenterTest extends TestCase
         $this->assertSame('PerMonth', $renter->getIncomeFrequency());
         $this->assertSame('PerYear', $renter->getOtherIncomeFrequency());
         $this->assertSame('2022-12-30', $renter->getMultiShareExpirationDate()->getValue());
+
+        $this->assertSame([
+            'person' => [
+                'emailAddress' => 'test@example.com',
+                'firstName' => 'First',
+                'middleName' => 'Middle',
+                'lastName' => 'Last',
+                'phoneNumber' => '0123456789',
+                'phoneType' => 'Home',
+                'socialSecurityNumber' => '012345789',
+                'dateOfBirth' => '1990-03-15',
+                'homeAddress' => [
+                    'addressLine1' => 'Streetname',
+                    'addressLine2' => 'Apartment',
+                    'locality' => 'Los Angeles',
+                    'region' => 'CA',
+                    'postalCode' => '12345',
+                    'country' => 'US',
+                ],
+                'acceptedTermsAndConditions' => true,
+            ],
+            'income' => '1000',
+            'incomeFrequency' => 'PerMonth',
+            'otherIncome' => '5000',
+            'otherIncomeFrequency' => 'PerYear',
+            'assets' => '12000',
+            'employmentStatus' => 'SelfEmployed',
+            'multiShareExpirationDate' => '2022-12-30',
+        ], $renter->toArray());
     }
 
 

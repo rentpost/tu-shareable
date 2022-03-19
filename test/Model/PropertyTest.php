@@ -26,6 +26,23 @@ class PropertyTest extends TestCase
         $this->assertInstanceOf(Address::class, $property->getAddress());
         $this->assertInstanceOf(Money::class, $property->getRent());
         $this->assertInstanceOf(Money::class, $property->getDeposit());
+
+        $this->assertSame([
+            'propertyId' => 123,
+            'propertyName' => 'Apartment',
+            'rent' => '500',
+            'deposit' => '1000',
+            'isActive' => true,
+            'addressLine1' => 'Streetname',
+            'addressLine2' => 'Apartment',
+            'locality' => 'Los Angeles',
+            'region' => 'CA',
+            'postalCode' => '12345',
+            'country' => 'US',
+            'bankruptcyCheck' => true,
+            'bankruptcyTimeFrame' => 20,
+            'incomeToRentRatio' => 90,
+        ], $property->toArray());
     }
 
 

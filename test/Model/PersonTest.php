@@ -30,6 +30,27 @@ class PersonTest extends TestCase
         $this->assertInstanceOf(Address::class, $person->getHomeAddress());
         $this->assertInstanceOf(Phone::class, $person->getPhone());
         $this->assertInstanceOf(SocialSecurityNumber::class, $person->getSocialSecurityNumber());
+
+        $this->assertSame([
+            'personId' => 123,
+            'emailAddress' => 'test@example.com',
+            'firstName' => 'First',
+            'middleName' => 'Middle',
+            'lastName' => 'Last',
+            'phoneNumber' => '0123456789',
+            'phoneType' => 'Home',
+            'socialSecurityNumber' => '012345789',
+            'dateOfBirth' => '1990-03-15',
+            'homeAddress' => [
+                'addressLine1' => 'Streetname',
+                'addressLine2' => 'Apartment',
+                'locality' => 'Los Angeles',
+                'region' => 'CA',
+                'postalCode' => '12345',
+                'country' => 'US',
+            ],
+            'acceptedTermsAndConditions' => true,
+        ], $person->toArray());
     }
 
 
