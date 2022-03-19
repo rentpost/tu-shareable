@@ -9,6 +9,7 @@ use Psr\Http\Message\RequestFactoryInterface as HttpRequestFactory;
 use Psr\Log\LoggerInterface;
 use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\Landlord;
+use Rentpost\TUShareable\Model\Property;
 
 /**
  * Client library for TransUnion - ShareAble for Rentals API.
@@ -78,6 +79,56 @@ class Client implements ClientInterface
     public function updateLandlord(Landlord $landlord): void
     {
         $this->requestJson('PUT', 'Landlords', $landlord->toArray());
+    }
+
+
+    /*
+     * Properties
+     */
+
+
+    public function getProperty(int $landlordId, int $propertyId): Property
+    {
+        $response = $this->request('GET', "Landlords/$landlordId/Properties/$propertyId");
+
+        $data = $this->decodeJson($response);
+
+        return $this->modelFactory->make(Property::class, $data);
+    }
+
+
+    /**
+     * @return Property[]
+     */
+    public function getProperties(int $landlordId): array
+    {
+        $response = $this->request('GET', "Landlords/$landlordId/Properties");
+
+        $data = $this->decodeJson($response);
+
+        $results = [];
+
+        foreach ($data as $p) {
+            $results[] = $this->modelFactory->make(Property::class, $p);
+        }
+
+        return $results;
+    }
+
+
+    public function createProperty(int $landlordId, Property $property): void
+    {
+        $response = $this->requestJson('POST', "Landlords/$landlordId/Properties", $property->toArray());
+
+        $responseData = $this->decodeJson($response);
+
+        $property->setPropertyId($responseData['propertyId']);
+    }
+
+
+    public function updateProperty(int $landlordId, Property $property): void
+    {
+        $this->requestJson('PUT', "Landlords/$landlordId/Properties", $property->toArray());
     }
 
 

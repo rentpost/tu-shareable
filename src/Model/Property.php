@@ -127,4 +127,30 @@ class Property
     {
         $this->isActive = $val;
     }
+
+
+    /**
+     * @return string[]
+     */
+    public function toArray(): array
+    {
+        $array = [];
+
+        if ($this->propertyId) {
+            $array['propertyId'] = $this->propertyId;
+        }
+
+        $array['propertyName'] = $this->propertyName;
+        $array['rent'] = $this->rent->getValue();
+        $array['deposit'] = $this->deposit->getValue();
+        $array['isActive'] = $this->isActive;
+
+        $array = array_merge($array, $this->getAddress()->toArray());
+
+        $array['bankruptcyCheck'] = $this->bankruptcyCheck;
+        $array['bankruptcyTimeFrame'] = $this->bankruptcyTimeFrame;
+        $array['incomeToRentRatio'] = $this->incomeToRentRatio;
+
+        return $array;
+    }
 }

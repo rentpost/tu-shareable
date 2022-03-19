@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Rentpost\TUShareable;
 
 use Rentpost\TUShareable\Model\Landlord;
+use Rentpost\TUShareable\Model\Property;
 
 /**
  * Interface for TransUnion - ShareAble for Rentals API.
@@ -30,4 +31,24 @@ interface ClientInterface
 
 
     public function updateLandlord(Landlord $landlord): void;
+
+
+    /*
+     * Properties
+     */
+
+
+    public function getProperty(int $landlordId, int $propertyId): Property;
+
+
+    /**
+     * @return Property[]
+     */
+    public function getProperties(int $landlordId): array;
+
+
+    public function createProperty(int $landlordId, Property $property): void;
+
+
+    public function updateProperty(int $landlordId, Property $property): void;
 }

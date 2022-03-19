@@ -8,7 +8,9 @@ use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\Email;
 use Rentpost\TUShareable\Model\Landlord;
+use Rentpost\TUShareable\Model\Money;
 use Rentpost\TUShareable\Model\Phone;
+use Rentpost\TUShareable\Model\Property;
 
 class ModelFactory
 {
@@ -22,6 +24,7 @@ class ModelFactory
             Address::class => $this->makeAddress($data),
             Bundle::class => $this->makeBundle($data),
             Landlord::class => $this->makeLandlord($data),
+            Property::class => $this->makeProperty($data),
             default => null
         };
 
@@ -78,5 +81,27 @@ class ModelFactory
         $landlord->setLandlordId($data['landlordId'] ?? null);
 
         return $landlord;
+    }
+
+
+    /**
+     * @param string[] $data
+     */
+    protected function makeProperty(array $data): Property
+    {
+        $property = new Property(
+            $data['propertyName'],
+            new Money((string)$data['rent']),
+            new Money((string)$data['deposit']),
+            $this->makeAddress($data),
+            boolval($data['bankruptcyCheck']),
+            $data['bankruptcyTimeFrame'],
+            $data['incomeToRentRatio']
+        );
+
+        $property->setPropertyId($data['propertyId'] ?? null);
+        $property->setIsActive(boolval($data['isActive']));
+
+        return $property;
     }
 }
