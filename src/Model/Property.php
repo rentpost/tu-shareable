@@ -15,7 +15,7 @@ class Property
     use Validate;
 
 
-    protected ?int $id = null;
+    protected ?int $propertyId = null;
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: 100)]
@@ -63,9 +63,9 @@ class Property
     }
 
 
-    public function getId(): ?int
+    public function getPropertyId(): ?int
     {
-        return $this->id;
+        return $this->propertyId;
     }
 
 
@@ -117,9 +117,9 @@ class Property
     }
 
 
-    public function setId(?int $id): void
+    public function setPropertyId(?int $propertyId): void
     {
-        $this->id = $id;
+        $this->propertyId = $propertyId;
     }
 
 

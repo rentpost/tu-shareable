@@ -16,24 +16,24 @@ class Bundle
 
 
     #[Assert\NotBlank]
-    protected int $id;
+    protected int $bundleId;
 
     #[Assert\NotBlank]
     protected string $name;
 
 
-    public function __construct(int $id, string $name)
+    public function __construct(int $bundleId, string $name)
     {
-        $this->id = $id;
+        $this->bundleId = $bundleId;
         $this->name = $name;
 
         $this->validate();
     }
 
 
-    public function getId(): int
+    public function getBundleId(): int
     {
-        return $this->id;
+        return $this->bundleId;
     }
 
 

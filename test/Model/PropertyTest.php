@@ -14,7 +14,9 @@ class PropertyTest extends TestCase
     public function testConstructorAndGetters()
     {
         $property = $this->makeObject('Apartment', true, 20, 90);
+        $property->setPropertyId(123);
 
+        $this->assertSame(123, $property->getPropertyId());
         $this->assertSame('Apartment', $property->getPropertyName());
         $this->assertTrue($property->getIsActive());
         $this->assertTrue($property->getBankruptcyCheck());

@@ -17,7 +17,9 @@ class PersonTest extends TestCase
     public function testConstructorAndGetters()
     {
         $person = $this->makeObject('First', 'Middle', 'Last', true);
+        $person->setPersonId(123);
 
+        $this->assertSame(123, $person->getPersonId());
         $this->assertSame('First', $person->getFirstName());
         $this->assertSame('Middle', $person->getMiddleName());
         $this->assertSame('Last', $person->getLastName());

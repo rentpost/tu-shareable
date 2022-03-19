@@ -15,7 +15,9 @@ class LandlordTest extends TestCase
     public function testConstructorAndGetters()
     {
         $landlord = $this->makeObject('First', 'Last', 'Business', true);
+        $landlord->setLandlordId(123);
 
+        $this->assertSame(123, $landlord->getLandlordId());
         $this->assertSame('First', $landlord->getFirstName());
         $this->assertSame('Last', $landlord->getLastName());
         $this->assertSame('Business', $landlord->getBusinessName());

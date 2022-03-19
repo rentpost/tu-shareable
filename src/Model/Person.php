@@ -15,7 +15,7 @@ class Person
     use Validate;
 
 
-    protected ?int $id = null;
+    protected ?int $personId = null;
 
     #[Assert\NotBlank]
     protected Email $emailAddress;
@@ -72,9 +72,9 @@ class Person
     }
 
 
-    public function getId(): ?int
+    public function getPersonId(): ?int
     {
-        return $this->id;
+        return $this->personId;
     }
 
 
@@ -132,8 +132,8 @@ class Person
     }
 
 
-    public function setId(?int $id): void
+    public function setPersonId(?int $personId): void
     {
-        $this->id = $id;
+        $this->personId = $personId;
     }
 }

@@ -15,7 +15,7 @@ class Landlord
     use Validate;
 
 
-    protected ?int $id = null;
+    protected ?int $landlordId = null;
 
     #[Assert\NotBlank]
     protected Email $emailAddress;
@@ -62,9 +62,9 @@ class Landlord
     }
 
 
-    public function getId(): ?int
+    public function getLandlordId(): ?int
     {
-        return $this->id;
+        return $this->landlordId;
     }
 
 
@@ -110,8 +110,8 @@ class Landlord
     }
 
 
-    public function setId(?int $id): void
+    public function setLandlordId(?int $landlordId): void
     {
-        $this->id = $id;
+        $this->landlordId = $landlordId;
     }
 }

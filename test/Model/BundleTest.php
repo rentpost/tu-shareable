@@ -13,7 +13,7 @@ class BundleTest extends TestCase
     {
         $bundle = new Bundle(123, 'Name');
 
-        $this->assertSame(123, $bundle->getId());
+        $this->assertSame(123, $bundle->getBundleId());
         $this->assertSame('Name', $bundle->getName());
     }
 }
