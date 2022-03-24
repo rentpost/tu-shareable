@@ -35,6 +35,17 @@ class Client implements ClientInterface
 
 
     /**
+     * @return string[]
+     */
+    public function getStatus(): array
+    {
+        $response = $this->request('GET', 'System');
+
+        return $this->decodeJson($response);
+    }
+
+
+    /**
      * @return Bundle[]
      */
     public function getBundles(): array

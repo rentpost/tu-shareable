@@ -15,6 +15,12 @@ interface ClientInterface
 {
 
     /**
+     * @return string[]
+     */
+    public function getStatus(): array;
+
+
+    /**
      * @return Bundle[]
      */
     public function getBundles(): array;
