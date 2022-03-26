@@ -12,6 +12,9 @@ class Exam
 
     protected int $examId;
 
+    /**
+     * @var ExamQuestion[]
+     */
     protected array $authenticationQuestions = [];
 
     protected string $result;

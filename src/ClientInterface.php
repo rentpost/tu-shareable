@@ -4,9 +4,14 @@ declare(strict_types = 1);
 
 namespace Rentpost\TUShareable;
 
+use Rentpost\TUShareable\Model\Bundle;
+use Rentpost\TUShareable\Model\Exam;
+use Rentpost\TUShareable\Model\ExamAnswer;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
+use Rentpost\TUShareable\Model\ScreeningRequest;
+use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 
 /**
  * Interface for TransUnion - ShareAble for Rentals API.
@@ -72,4 +77,65 @@ interface ClientInterface
 
 
     public function updateRenter(Renter $renter): void;
+
+
+    /*
+     * ScreeningRequests
+     */
+
+
+    public function getScreeningRequest(int $screeningRequestId): ScreeningRequest;
+
+
+    /**
+     * @return ScreeningRequest[]
+     */
+    public function getScreeningRequestsForLandlord(int $landlordId, int $pageNumber = 1, int $pageSize = 10): array;
+
+
+    /**
+     * @return ScreeningRequest[]
+     */
+    public function getScreeningRequestsForRenter(int $renterId, int $pageNumber = 1, int $pageSize = 10): array;
+
+
+    public function createScreeningRequest(ScreeningRequest $request): void;
+
+
+    /*
+     * ScreeningRequestRenters
+     */
+
+
+    public function getScreeningRequestRenter(int $screeningRequestRenterId): ScreeningRequestRenter;
+
+
+    /**
+     * @return ScreeningRequestRenter[]
+     */
+    public function getRentersForScreeningRequest(int $screeningRequestId): array;
+
+
+    public function addRenterToScreeningRequest(int $screeningRequestId, ScreeningRequestRenter $renter): void;
+
+
+    public function cancelScreeningRequestForRenter(int $screeningRequestRenterId): void;
+
+
+    public function validateRenterForScreeningRequest(int $screeningRequestRenterId, Renter $renter): string;
+
+
+    /*
+     * Exams and Answers
+     */
+
+
+    public function createExam(
+        int $screeningRequestRenterId,
+        Renter $renter,
+        ?string $externalReferenceNumber = null
+    ): Exam;
+
+
+    public function answerExam(int $screeningRequestRenterId, int $examId, ExamAnswer $answer): Exam;
 }

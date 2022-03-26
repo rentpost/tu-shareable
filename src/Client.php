@@ -293,7 +293,11 @@ class Client implements ClientInterface
 
     public function addRenterToScreeningRequest(int $screeningRequestId, ScreeningRequestRenter $renter): void
     {
-        $response = $this->requestJson('POST', "ScreeningRequests/$screeningRequestId/ScreeningRequestRenters", $renter->toArray());
+        $response = $this->requestJson(
+            'POST',
+            "ScreeningRequests/$screeningRequestId/ScreeningRequestRenters",
+            $renter->toArray()
+        );
 
         $responseData = $this->decodeJson($response);
 
@@ -309,7 +313,11 @@ class Client implements ClientInterface
 
     public function validateRenterForScreeningRequest(int $screeningRequestRenterId, Renter $renter): string
     {
-        $response = $this->requestJson('POST', "ScreeningRequestRenters/$screeningRequestRenterId/Validate", $renter->getPerson()->toArray());
+        $response = $this->requestJson(
+            'POST',
+            "ScreeningRequestRenters/$screeningRequestRenterId/Validate",
+            $renter->getPerson()->toArray()
+        );
 
         $responseData = $this->decodeJson($response);
 
@@ -317,10 +325,19 @@ class Client implements ClientInterface
     }
 
 
-    public function createExam(int $screeningRequestRenterId, Renter $renter, ?string $externalReferenceNumber = null): Exam
+    /*
+     * Exams and Answers
+     */
+
+
+    public function createExam(
+        int $screeningRequestRenterId,
+        Renter $renter,
+        ?string $externalReferenceNumber = null
+    ): Exam
     {
         $requestData = [
-            'person' => $renter->getPerson()->toArray()
+            'person' => $renter->getPerson()->toArray(),
         ];
 
         if ($externalReferenceNumber) {
@@ -337,7 +354,11 @@ class Client implements ClientInterface
 
     public function answerExam(int $screeningRequestRenterId, int $examId, ExamAnswer $answer): Exam
     {
-        $response = $this->requestJson('POST', "ScreeningRequestRenters/$screeningRequestRenterId/Exams/$examId/Answers", $answer->toArray());
+        $response = $this->requestJson(
+            'POST',
+            "ScreeningRequestRenters/$screeningRequestRenterId/Exams/$examId/Answers",
+            $answer->toArray()
+        );
 
         $responseData = $this->decodeJson($response);
 

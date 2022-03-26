@@ -10,6 +10,9 @@ namespace Rentpost\TUShareable\Model;
 class ExamAnswer
 {
 
+    /**
+     * @var array[]
+     */
     protected array $answers = [];
 
 
@@ -17,13 +20,16 @@ class ExamAnswer
     {
         $this->answers[] = [
             $question,
-            $answer
+            $answer,
         ];
 
         return $this;
     }
 
 
+    /**
+     * @return string[]
+     */
     public function toArray(): array
     {
         $results = [];
@@ -31,12 +37,12 @@ class ExamAnswer
         foreach ($this->answers as $qa) {
             $results[] = [
                 'questionKeyName' => $qa[0]->getQuestionKeyName(),
-                'selectedChoiceKeyName' => $qa[1]->getChoiceKeyName()
+                'selectedChoiceKeyName' => $qa[1]->getChoiceKeyName(),
             ];
         }
 
         return [
-            'answers' => $results
+            'answers' => $results,
         ];
     }
 }

@@ -16,6 +16,9 @@ class ExamQuestion
 
     protected string $type;
 
+    /**
+     * @var ExamQuestionAnswer[]
+     */
     protected array $choices = [];
 
 
@@ -53,6 +56,9 @@ class ExamQuestion
     }
 
 
+    /**
+     * @return ExamQuestionAnswer[]
+     */
     public function getChoices(): array
     {
         return $this->choices;

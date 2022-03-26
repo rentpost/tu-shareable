@@ -34,6 +34,9 @@ class ScreeningRequest
 
     protected ?string $propertySummaryAddress;
 
+    /**
+     * @var ScreeningRequestRenter[]
+     */
     protected array $screeningRequestRenters = [];
 
 
