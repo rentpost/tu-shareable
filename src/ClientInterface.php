@@ -31,7 +31,7 @@ interface ClientInterface
      */
 
 
-    public function getLandlord(int $id): Landlord;
+    public function getLandlord(int $landlordId): Landlord;
 
 
     public function createLandlord(Landlord $landlord): void;

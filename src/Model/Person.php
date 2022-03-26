@@ -158,8 +158,14 @@ class Person
 
         $array = array_merge($array, $this->phone->toArray());
 
-        $array['socialSecurityNumber'] = $this->socialSecurityNumber->getValue();
-        $array['dateOfBirth'] = $this->dateOfBirth->getValue();
+        if ($this->socialSecurityNumber) {
+            $array['socialSecurityNumber'] = $this->socialSecurityNumber->getValue();
+        }
+
+        if ($this->dateOfBirth) {
+            $array['dateOfBirth'] = $this->dateOfBirth->getValue();
+        }
+
         $array['homeAddress'] = $this->homeAddress->toArray();
         $array['acceptedTermsAndConditions'] = $this->acceptedTermsAndConditions;
 

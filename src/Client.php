@@ -11,6 +11,8 @@ use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
+use Rentpost\TUShareable\Model\ScreeningRequest;
+use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 
 /**
  * Client library for TransUnion - ShareAble for Rentals API.
@@ -68,9 +70,9 @@ class Client implements ClientInterface
      */
 
 
-    public function getLandlord(int $id): Landlord
+    public function getLandlord(int $landlordId): Landlord
     {
-        $response = $this->request('GET', "Landlords/$id");
+        $response = $this->request('GET', "Landlords/$landlordId");
 
         $data = $this->decodeJson($response);
 
@@ -177,6 +179,139 @@ class Client implements ClientInterface
     public function updateRenter(Renter $renter): void
     {
         $this->requestJson('PUT', 'Renters', $renter->toArray());
+    }
+
+
+    /*
+     * ScreeningRequests
+     */
+
+
+    public function getScreeningRequest(int $screeningRequestId): ScreeningRequest
+    {
+        $response = $this->request('GET', "ScreeningRequests/$screeningRequestId");
+
+        $data = $this->decodeJson($response);
+
+        return $this->modelFactory->make(ScreeningRequest::class, $data);
+    }
+
+
+    /**
+     * @return ScreeningRequest[]
+     */
+    public function getScreeningRequestsForLandlord(int $landlordId, int $pageNumber = 1, int $pageSize = 10): array
+    {
+        $params = http_build_query([
+            'PageNumber' => $pageNumber,
+            'PageSize' => $pageSize,
+        ]);
+
+        $response = $this->request('GET', "Landlords/$landlordId/ScreeningRequests?" . $params);
+
+        $data = $this->decodeJson($response);
+
+        $results = [];
+
+        foreach ($data as $sr) {
+            $results[] = $this->modelFactory->make(ScreeningRequest::class, $sr);
+        }
+
+        return $results;
+    }
+
+
+    /**
+     * @return ScreeningRequest[]
+     */
+    public function getScreeningRequestsForRenter(int $renterId, int $pageNumber = 1, int $pageSize = 10): array
+    {
+        $params = http_build_query([
+            'PageNumber' => $pageNumber,
+            'PageSize' => $pageSize,
+        ]);
+
+        $response = $this->request('GET', "Renters/$renterId/ScreeningRequests?" . $params);
+
+        $data = $this->decodeJson($response);
+
+        $results = [];
+
+        foreach ($data as $sr) {
+            $results[] = $this->modelFactory->make(ScreeningRequest::class, $sr);
+        }
+
+        return $results;
+    }
+
+
+    public function createScreeningRequest(ScreeningRequest $request): void
+    {
+        $response = $this->requestJson('POST', 'ScreeningRequests', $request->toArray());
+
+        $responseData = $this->decodeJson($response);
+
+        $request->setScreeningRequestId($responseData['screeningRequestId']);
+    }
+
+
+    /*
+     * ScreeningRequestRenters
+     */
+
+
+    public function getScreeningRequestRenter(int $screeningRequestRenterId): ScreeningRequestRenter
+    {
+        $response = $this->request('GET', "ScreeningRequestRenters/$screeningRequestRenterId");
+
+        $responseData = $this->decodeJson($response);
+
+        return $this->modelFactory->make(ScreeningRequestRenter::class, $responseData);
+    }
+
+
+    /**
+     * @return ScreeningRequestRenter[]
+     */
+    public function getRentersForScreeningRequest(int $screeningRequestId): array
+    {
+        $response = $this->request('GET', "ScreeningRequests/$screeningRequestId/ScreeningRequestRenters");
+
+        $data = $this->decodeJson($response);
+
+        $results = [];
+
+        foreach ($data as $sr) {
+            $results[] = $this->modelFactory->make(ScreeningRequestRenter::class, $sr);
+        }
+
+        return $results;
+    }
+
+
+    public function addRenterToScreeningRequest(int $screeningRequestId, ScreeningRequestRenter $renter): void
+    {
+        $response = $this->requestJson('POST', "ScreeningRequests/$screeningRequestId/ScreeningRequestRenters", $renter->toArray());
+
+        $responseData = $this->decodeJson($response);
+
+        $renter->setScreeningRequestRenterId($responseData['screeningRequestRenterId']);
+    }
+
+
+    public function cancelScreeningRequestForRenter(int $screeningRequestRenterId): void
+    {
+        $this->request('PUT', "ScreeningRequestRenters/$screeningRequestRenterId/Cancel");
+    }
+
+
+    public function validateRenterForScreeningRequest(int $screeningRequestRenterId, Renter $renter): string
+    {
+        $response = $this->requestJson('POST', "ScreeningRequestRenters/$screeningRequestRenterId/Validate", $renter->getPerson()->toArray());
+
+        $responseData = $this->decodeJson($response);
+
+        return $responseData['status'];
     }
 
 

@@ -6,6 +6,7 @@ namespace Rentpost\TUShareable;
 
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Bundle;
+use Rentpost\TUShareable\Model\Date;
 use Rentpost\TUShareable\Model\Email;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Money;
@@ -13,6 +14,8 @@ use Rentpost\TUShareable\Model\Person;
 use Rentpost\TUShareable\Model\Phone;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
+use Rentpost\TUShareable\Model\ScreeningRequest;
+use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 use Rentpost\TUShareable\Model\SocialSecurityNumber;
 
 class ModelFactory
@@ -29,6 +32,8 @@ class ModelFactory
             Landlord::class => $this->makeLandlord($data),
             Property::class => $this->makeProperty($data),
             Renter::class => $this->makeRenter($data),
+            ScreeningRequest::class => $this->makeScreeningRequest($data),
+            ScreeningRequestRenter::class => $this->makeScreeningRequestRenter($data),
             default => null
         };
 
@@ -153,5 +158,55 @@ class ModelFactory
             $data['employmentStatus'],
             $msex ? new Date($msex) : null
         );
+    }
+
+
+    /**
+     * @param string[] $data
+     */
+    protected function makeScreeningRequest(array $data): ScreeningRequest
+    {
+        $request = new ScreeningRequest(
+            $data['landlordId'],
+            $data['propertyId'],
+            $data['initialBundleId'],
+            $data['createdOn'] ? new Date(substr($data['createdOn'], 0, 10)) : null,
+            $data['modifiedOn'] ? new Date(substr($data['modifiedOn'], 0, 10)) : null,
+            $data['propertyName'] ?? null,
+            $data['propertySummaryAddress'] ?? null
+        );
+
+        $request->setScreeningRequestId($data['screeningRequestId'] ?? null);
+
+        foreach ($data['screeningRequestRenters'] as $renterInfo) {
+            $request->addScreeningRequestRenter($this->makeScreeningRequestRenter($renterInfo));
+        }
+
+        return $request;
+    }
+
+
+    /**
+     * @param string[] $data
+     */
+    protected function makeScreeningRequestRenter(array $data): ScreeningRequestRenter
+    {
+        $renter = new ScreeningRequestRenter(
+            $data['landlordId'],
+            $data['renterId'],
+            $data['bundleId'],
+            $data['renterRole'],
+            $data['renterStatus'],
+            $data['createdOn'] ? new Date(substr($data['createdOn'], 0, 10)) : null,
+            $data['modifiedOn'] ? new Date(substr($data['modifiedOn'], 0, 10)) : null,
+            $data['renterFirstName'] ?? null,
+            $data['renterLastName'] ?? null,
+            $data['renterMiddleName'] ?? null,
+            $data['reportsExpireNumberOfDays'] ?? null
+        );
+
+        $renter->setScreeningRequestRenterId($data['screeningRequestRenterId'] ?? null);
+
+        return $renter;
     }
 }
