@@ -136,6 +136,12 @@ class Person
     }
 
 
+    public function setDateOfBirth(?Date $date): void
+    {
+        $this->dateOfBirth = $date;
+    }
+
+
     /**
      * @return string[]
      */

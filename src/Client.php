@@ -8,6 +8,8 @@ use Psr\Http\Client\ClientInterface as HttpClient;
 use Psr\Http\Message\RequestFactoryInterface as HttpRequestFactory;
 use Psr\Log\LoggerInterface;
 use Rentpost\TUShareable\Model\Bundle;
+use Rentpost\TUShareable\Model\Exam;
+use Rentpost\TUShareable\Model\ExamAnswer;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
@@ -312,6 +314,34 @@ class Client implements ClientInterface
         $responseData = $this->decodeJson($response);
 
         return $responseData['status'];
+    }
+
+
+    public function createExam(int $screeningRequestRenterId, Renter $renter, ?string $externalReferenceNumber = null): Exam
+    {
+        $requestData = [
+            'person' => $renter->getPerson()->toArray()
+        ];
+
+        if ($externalReferenceNumber) {
+            $requestData['externalReferenceNumber'] = $externalReferenceNumber;
+        }
+
+        $response = $this->requestJson('POST', "ScreeningRequestRenters/$screeningRequestRenterId/Exams", $requestData);
+
+        $responseData = $this->decodeJson($response);
+
+        return $this->modelFactory->make(Exam::class, $responseData);
+    }
+
+
+    public function answerExam(int $screeningRequestRenterId, int $examId, ExamAnswer $answer): Exam
+    {
+        $response = $this->requestJson('POST', "ScreeningRequestRenters/$screeningRequestRenterId/Exams/$examId/Answers", $answer->toArray());
+
+        $responseData = $this->decodeJson($response);
+
+        return $this->modelFactory->make(Exam::class, $responseData);
     }
 
 

@@ -8,6 +8,9 @@ use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\Date;
 use Rentpost\TUShareable\Model\Email;
+use Rentpost\TUShareable\Model\Exam;
+use Rentpost\TUShareable\Model\ExamQuestion;
+use Rentpost\TUShareable\Model\ExamQuestionAnswer;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Money;
 use Rentpost\TUShareable\Model\Person;
@@ -29,6 +32,7 @@ class ModelFactory
         $object = match ($name) {
             Address::class => $this->makeAddress($data),
             Bundle::class => $this->makeBundle($data),
+            Exam::class => $this->makeExam($data),
             Landlord::class => $this->makeLandlord($data),
             Property::class => $this->makeProperty($data),
             Renter::class => $this->makeRenter($data),
@@ -69,6 +73,30 @@ class ModelFactory
     protected function makeBundle(array $data): Bundle
     {
         return new Bundle($data['bundleId'], $data['name']);
+    }
+
+
+    /**
+     * @param string[] $data
+     */
+    protected function makeExam(array $data): Exam
+    {
+        $exam = new Exam($data['examId'], $data['result']);
+        $exam->setExternalReferenceNumber($data['setExternalReferenceNumber'] ?? null);
+
+        foreach ($data['authenticationQuestions'] as $qInfo) {
+            $question = new ExamQuestion($qInfo['questionKeyName'], $qInfo['questionDisplayName'], $qInfo['type']);
+
+            foreach ($qInfo['choices'] as $choice) {
+                $answer = new ExamQuestionAnswer($choice['choiceKeyName'], $choice['choiceDisplayName']);
+
+                $question->addChoice($answer);
+            }
+
+            $exam->addQuestion($question);
+        }
+
+        return $exam;
     }
 
 
