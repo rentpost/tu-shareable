@@ -142,6 +142,12 @@ class Person
     }
 
 
+    public function setSocialSecurityNumber(?SocialSecurityNumber $ssn): void
+    {
+        $this->socialSecurityNumber = $ssn;
+    }
+
+
     /**
      * @return string[]
      */

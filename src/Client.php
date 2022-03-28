@@ -13,6 +13,7 @@ use Rentpost\TUShareable\Model\ExamAnswer;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
+use Rentpost\TUShareable\Model\Report;
 use Rentpost\TUShareable\Model\ScreeningRequest;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 
@@ -363,6 +364,72 @@ class Client implements ClientInterface
         $responseData = $this->decodeJson($response);
 
         return $this->modelFactory->make(Exam::class, $responseData);
+    }
+
+
+    /*
+     * Reports
+     */
+
+
+    public function createReport(int $screeningRequestRenterId, Renter $renter): void
+    {
+        $requestData = [
+            'person' => $renter->getPerson()->toArray(),
+        ];
+
+        $this->requestJson('POST', "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports", $requestData);
+    }
+
+
+    public function getReportForLandlord(
+        int $screeningRequestRenterId,
+        RequestedProduct $requestedProduct,
+        ReportType $reportType
+    ): Report
+    {
+        $params = http_build_query([
+            'requestedProduct' => $requestedProduct->value,
+            'reportType' => $reportType->value,
+        ]);
+
+        $response = $this->request(
+            'GET',
+            "Landlords/ScreeningRequestRenters/$screeningRequestRenterId/Reports?" . $params
+        );
+
+        $responseData = $this->decodeJson($response);
+
+        return $this->modelFactory->make(Report::class, $responseData);
+    }
+
+
+    public function getReportForRenter(
+        int $screeningRequestRenterId,
+        RequestedProduct $requestedProduct,
+        ReportType $reportType
+    ): Report
+    {
+        // ShareAble documentation:
+        // The Identity Check Report (IdReport) is not available as a renter report
+        // and should not be shown to the rental applicant.
+        if ($requestedProduct === RequestedProduct::IdReport) {
+            throw new ClientException('The IdReport is not available for renter');
+        }
+
+        $params = http_build_query([
+            'requestedProduct' => $requestedProduct->value,
+            'reportType' => $reportType->value,
+        ]);
+
+        $response = $this->request(
+            'GET',
+            "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports?" . $params
+        );
+
+        $responseData = $this->decodeJson($response);
+
+        return $this->modelFactory->make(Report::class, $responseData);
     }
 
 

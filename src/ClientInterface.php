@@ -10,6 +10,7 @@ use Rentpost\TUShareable\Model\ExamAnswer;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
+use Rentpost\TUShareable\Model\Report;
 use Rentpost\TUShareable\Model\ScreeningRequest;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 
@@ -138,4 +139,26 @@ interface ClientInterface
 
 
     public function answerExam(int $screeningRequestRenterId, int $examId, ExamAnswer $answer): Exam;
+
+
+    /*
+     * Reports
+     */
+
+
+    public function createReport(int $screeningRequestRenterId, Renter $renter): void;
+
+
+    public function getReportForLandlord(
+        int $screeningRequestRenterId,
+        RequestedProduct $requestedProduct,
+        ReportType $reportType
+    ): Report;
+
+
+    public function getReportForRenter(
+        int $screeningRequestRenterId,
+        RequestedProduct $requestedProduct,
+        ReportType $reportType
+    ): Report;
 }
