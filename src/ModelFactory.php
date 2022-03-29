@@ -18,6 +18,7 @@ use Rentpost\TUShareable\Model\Phone;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
 use Rentpost\TUShareable\Model\Report;
+use Rentpost\TUShareable\Model\Reports;
 use Rentpost\TUShareable\Model\ScreeningRequest;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 use Rentpost\TUShareable\Model\SocialSecurityNumber;
@@ -37,7 +38,7 @@ class ModelFactory
             Landlord::class => $this->makeLandlord($data),
             Property::class => $this->makeProperty($data),
             Renter::class => $this->makeRenter($data),
-            Report::class => $this->makeReport($data),
+            Reports::class => $this->makeReports($data),
             ScreeningRequest::class => $this->makeScreeningRequest($data),
             ScreeningRequestRenter::class => $this->makeScreeningRequestRenter($data),
             default => null
@@ -194,13 +195,18 @@ class ModelFactory
     /**
      * @param string[] $data
      */
-    public function makeReport(array $data): Report
+    public function makeReports(array $data): Reports
     {
-        return new Report(
-            $data['reportsExpireNumberOfDays'],
-            $data['reportResponseModelDetails']['providerName'],
-            $data['reportResponseModelDetails']['reportData']
-        );
+        $reports = new Reports($data['reportsExpireNumberOfDays']);
+
+        foreach ($data['reportResponseModelDetails'] as $reportInfo) {
+            $reports->addReport(new Report(
+                $reportInfo['providerName'],
+                $reportInfo['reportData']
+            ));
+        }
+
+        return $reports;
     }
 
 

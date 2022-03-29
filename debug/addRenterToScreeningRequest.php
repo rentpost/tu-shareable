@@ -5,16 +5,16 @@ $client = getShareableClient();
 
 $screeningRequestRenter = new Rentpost\TUShareable\Model\ScreeningRequestRenter(
     273210,
-    273235,
-    2,
+    277846,
+    3,
     'Applicant',
     null,
     null,
     null,
-    'Meta',
-    'Last'
+    'Bonnie',
+    'Adams'
 );
 
-$client->addRenterToScreeningRequest(243295, $screeningRequestRenter);
+$client->addRenterToScreeningRequest(243734, $screeningRequestRenter);
 
 echo $screeningRequestRenter->getScreeningRequestRenterId() . "\n";

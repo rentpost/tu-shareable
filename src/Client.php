@@ -13,7 +13,7 @@ use Rentpost\TUShareable\Model\ExamAnswer;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
-use Rentpost\TUShareable\Model\Report;
+use Rentpost\TUShareable\Model\Reports;
 use Rentpost\TUShareable\Model\ScreeningRequest;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 
@@ -382,11 +382,11 @@ class Client implements ClientInterface
     }
 
 
-    public function getReportForLandlord(
+    public function getReportsForLandlord(
         int $screeningRequestRenterId,
         RequestedProduct $requestedProduct,
         ReportType $reportType
-    ): Report
+    ): Reports
     {
         $params = http_build_query([
             'requestedProduct' => $requestedProduct->value,
@@ -400,15 +400,15 @@ class Client implements ClientInterface
 
         $responseData = $this->decodeJson($response);
 
-        return $this->modelFactory->make(Report::class, $responseData);
+        return $this->modelFactory->make(Reports::class, $responseData);
     }
 
 
-    public function getReportForRenter(
+    public function getReportsForRenter(
         int $screeningRequestRenterId,
         RequestedProduct $requestedProduct,
         ReportType $reportType
-    ): Report
+    ): Reports
     {
         // ShareAble documentation:
         // The Identity Check Report (IdReport) is not available as a renter report
@@ -429,7 +429,7 @@ class Client implements ClientInterface
 
         $responseData = $this->decodeJson($response);
 
-        return $this->modelFactory->make(Report::class, $responseData);
+        return $this->modelFactory->make(Reports::class, $responseData);
     }
 
 

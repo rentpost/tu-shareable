@@ -6,11 +6,11 @@ $client = getShareableClient();
 $request = new Rentpost\TUShareable\Model\ScreeningRequest(
     273210,
     163338,
-    2,
+    3,
     null,
     null,
     'Apartment 667',
-    'Street, Apartment, Los Angeles, CA'
+    'Sacramento, Los Angeles, CA'
 );
 
 $client->createScreeningRequest($request);

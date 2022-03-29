@@ -4,14 +4,14 @@ require(__DIR__ . '/bootstrap.php');
 $client = getShareableClient();
 
 $person = new Rentpost\TUShareable\Model\Person(
-    new Rentpost\TUShareable\Model\Email('test@example.com'),
-    'First',
+    new Rentpost\TUShareable\Model\Email('bonnie@example.com'),
+    'Bonnie',
     null,
-    'Last',
+    'Adams',
     new Rentpost\TUShareable\Model\Phone('0123456789', 'Home'),
-    new Rentpost\TUShareable\Model\SocialSecurityNumber('123456789'),
-    new Rentpost\TUShareable\Model\Date('1990-10-15'),
-    new Rentpost\TUShareable\Model\Address('Street', 'Apartment', '', '', 'Los Angeles', 'CA', '12345'),
+    new Rentpost\TUShareable\Model\SocialSecurityNumber('666603693'),
+    new Rentpost\TUShareable\Model\Date('1947-03-06'),
+    new Rentpost\TUShareable\Model\Address('5333 Finsbury Ave', '', '', '', 'Sacramento', 'CA', '95841'),
     true
 );
 

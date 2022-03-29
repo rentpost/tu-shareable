@@ -1,5 +1,7 @@
 debug/config
 debug/log.txt
+debug/landlord_report.html
+debug/renter_report.html
 vendor/
 .phpunit.result.cache
 composer.lock
