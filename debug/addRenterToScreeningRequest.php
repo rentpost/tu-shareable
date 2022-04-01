@@ -15,6 +15,6 @@ $screeningRequestRenter = new Rentpost\TUShareable\Model\ScreeningRequestRenter(
     'Adams'
 );
 
-$client->addRenterToScreeningRequest(243734, $screeningRequestRenter);
+$client->addRenterToScreeningRequest(244676, $screeningRequestRenter);
 
 echo $screeningRequestRenter->getScreeningRequestRenterId() . "\n";

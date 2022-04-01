@@ -23,6 +23,9 @@ use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 class Client implements ClientInterface
 {
 
+    use JsonHelper;
+
+
     protected ?string $authToken = null;
 
 
@@ -32,7 +35,6 @@ class Client implements ClientInterface
         protected HttpClient $httpClient,
         protected ModelFactory $modelFactory,
         protected string $baseUrl,
-        protected string $partnerId,
         protected string $clientId,
         protected string $apiKey
     ) {
@@ -436,33 +438,6 @@ class Client implements ClientInterface
     /*
      * Private functions
      */
-
-
-    /**
-     * @param string[] $data
-     */
-    protected function encodeJson(array $data): string
-    {
-        $encoded = json_encode($data);
-
-        if (json_last_error() !== \JSON_ERROR_NONE) {
-            throw new ClientException('Unable to encode JSON: ' . json_last_error_msg());
-        }
-
-        return $encoded;
-    }
-
-
-    protected function decodeJson(string $data): mixed
-    {
-        $decoded = json_decode($data, true);
-
-        if (json_last_error() !== \JSON_ERROR_NONE) {
-            throw new ClientException("Unable to decode JSON '$data': " . json_last_error_msg());
-        }
-
-        return $decoded;
-    }
 
 
     protected function fetchToken(): void

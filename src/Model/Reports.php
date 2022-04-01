@@ -18,7 +18,6 @@ class Reports
 
     public function __construct(protected int $reportsExpireNumberOfDays)
     {
-
     }
 
 

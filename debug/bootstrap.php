@@ -21,7 +21,6 @@ function getShareableClient()
         $httpClient,
         $modelFactory,
         $config['url'],
-        $config['partnerId'],
         $config['clientId'],
         $config['apiKey']
     );

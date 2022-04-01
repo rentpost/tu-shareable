@@ -15,7 +15,6 @@ class Report
         protected string $reportData
     )
     {
-
     }
 
 

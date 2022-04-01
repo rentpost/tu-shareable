@@ -4,7 +4,7 @@ require(__DIR__ . '/bootstrap.php');
 $client = getShareableClient();
 
 $reports = $client->getReportsForLandlord(
-    130732,
+    131049,
     Rentpost\TUShareable\RequestedProduct::Credit,
     Rentpost\TUShareable\ReportType::Html
 );

@@ -11,4 +11,4 @@ $renter->getPerson()->setDateOfBirth(new Rentpost\TUShareable\Model\Date('1947-0
 // Social security number is required
 $renter->getPerson()->setSocialSecurityNumber(new Rentpost\TUShareable\Model\SocialSecurityNumber('666603693'));
 
-$client->createReport(130732, $renter);
+$client->createReport(131384, $renter);
