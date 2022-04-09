@@ -2,6 +2,7 @@ debug/config
 debug/log.txt
 debug/landlord_report.html
 debug/renter_report.html
+test/Integration/config
 vendor/
 .phpunit.result.cache
 composer.lock

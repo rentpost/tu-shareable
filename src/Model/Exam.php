@@ -43,7 +43,10 @@ class Exam
     }
 
 
-    public function getAuthenticationQuestions(): string
+    /**
+     * @return ExamQuestion[]
+     */
+    public function getAuthenticationQuestions(): array
     {
         return $this->authenticationQuestions;
     }
