@@ -2,6 +2,8 @@
 
 declare(strict_types = 1);
 
+namespace test\Rentpost\TUShareable\Unit\Model;
+
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Date;

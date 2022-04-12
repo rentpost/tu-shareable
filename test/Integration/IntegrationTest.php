@@ -2,33 +2,32 @@
 
 declare(strict_types = 1);
 
+namespace test\Rentpost\TUShareable\Integration;
+
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\HttpFactory;
-use Monolog\Logger;
 use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Client;
 use Rentpost\TUShareable\ClientInterface;
-use Rentpost\TUShareable\ModelFactory;
-use Rentpost\TUShareable\ReportType;
-use Rentpost\TUShareable\RequestedProduct;
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Date;
 use Rentpost\TUShareable\Model\Email;
 use Rentpost\TUShareable\Model\Exam;
 use Rentpost\TUShareable\Model\ExamAnswer;
-use Rentpost\TUShareable\Model\ExamQuestion;
-use Rentpost\TUShareable\Model\ExamQuestionAnswer;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Money;
 use Rentpost\TUShareable\Model\Person;
 use Rentpost\TUShareable\Model\Phone;
 use Rentpost\TUShareable\Model\Property;
-use Rentpost\TUShareable\Model\Reports;
 use Rentpost\TUShareable\Model\Renter;
 use Rentpost\TUShareable\Model\ScreeningRequest;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 use Rentpost\TUShareable\Model\SocialSecurityNumber;
+use Rentpost\TUShareable\ModelFactory;
+use Rentpost\TUShareable\ReportType;
+use Rentpost\TUShareable\RequestedProduct;
 
 class IntegrationTest extends TestCase
 {
@@ -39,12 +38,12 @@ class IntegrationTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         $logger = new Logger('TUShareable');
-        $logger->pushHandler(new TestHandler());
+        $logger->pushHandler(new TestHandler);
 
-        $requestFactory = new HttpFactory();
-        $httpClient = new HttpClient();
+        $requestFactory = new HttpFactory;
+        $httpClient = new HttpClient;
 
-        $modelFactory = new ModelFactory();
+        $modelFactory = new ModelFactory;
 
         $config = parse_ini_file(__DIR__ . '/config');
 
@@ -85,7 +84,7 @@ class IntegrationTest extends TestCase
      */
     public function testCreateProperty(Landlord $landlord): Property
     {
-        $property = new Rentpost\TUShareable\Model\Property(
+        $property = new Property(
             'Apartment',
             new Money('500'),
             new Money('1000'),
@@ -109,7 +108,7 @@ class IntegrationTest extends TestCase
      */
     public function testCreateScreeningRequest(Landlord $landlord, Property $property): ScreeningRequest
     {
-        $request = new Rentpost\TUShareable\Model\ScreeningRequest(
+        $request = new ScreeningRequest(
             $landlord->getLandlordId(),
             $property->getPropertyId(),
             3, // bundleId
@@ -132,7 +131,7 @@ class IntegrationTest extends TestCase
         // Renter information has to match exactly with documentation
         // in order for validation to work and give expected results.
 
-        $person = new Rentpost\TUShareable\Model\Person(
+        $person = new Person(
             new Email('bonnie@example.com'),
             'Bonnie',
             null,
@@ -168,9 +167,13 @@ class IntegrationTest extends TestCase
      * @depends testCreateScreeningRequest
      * @depends testCreateRenter
      */
-    public function testAddRenterToScreeningRequest(Landlord $landlord, ScreeningRequest $request, Renter $renter): ScreeningRequestRenter
+    public function testAddRenterToScreeningRequest(
+        Landlord $landlord,
+        ScreeningRequest $request,
+        Renter $renter,
+    ): ScreeningRequestRenter
     {
-        $screeningRequestRenter = new Rentpost\TUShareable\Model\ScreeningRequestRenter(
+        $screeningRequestRenter = new ScreeningRequestRenter(
             $landlord->getLandlordId(),
             $renter->getRenterId(),
             3, // bundleId
@@ -211,7 +214,7 @@ class IntegrationTest extends TestCase
      */
     public function testAnswerExam(ScreeningRequestRenter $screeningRequestRenter, Exam $exam): Exam
     {
-        $answer = new ExamAnswer();
+        $answer = new ExamAnswer;
 
         foreach ($exam->getAuthenticationQuestions() as $question) {
             $choices = $question->getChoices();
@@ -219,7 +222,11 @@ class IntegrationTest extends TestCase
             $answer->addQuestionAnswer($question, $firstChoice);
         }
 
-        $newExam = self::$client->answerExam($screeningRequestRenter->getScreeningRequestRenterId(), $exam->getExamId(), $answer);
+        $newExam = self::$client->answerExam(
+            $screeningRequestRenter->getScreeningRequestRenterId(),
+            $exam->getExamId(),
+            $answer,
+        );
 
         // Important: Make sure the test was passed
         $this->assertSame('Passed', $newExam->getResult());
@@ -233,9 +240,16 @@ class IntegrationTest extends TestCase
      * @depends testAddRenterToScreeningRequest
      * @depends testAnswerExam
      */
-    public function testValidateRenterForScreeningRequest(Renter $renter, ScreeningRequestRenter $screeningRequestRenter, Exam $exam): string
+    public function testValidateRenterForScreeningRequest(
+        Renter $renter,
+        ScreeningRequestRenter $screeningRequestRenter,
+        Exam $exam,
+    ): string
     {
-        $status = self::$client->validateRenterForScreeningRequest($screeningRequestRenter->getScreeningRequestRenterId(), $renter);
+        $status = self::$client->validateRenterForScreeningRequest(
+            $screeningRequestRenter->getScreeningRequestRenterId(),
+            $renter,
+        );
 
         // Important: Make sure validation passes
         $this->assertSame('Verified', $status);
@@ -249,7 +263,11 @@ class IntegrationTest extends TestCase
      * @depends testAddRenterToScreeningRequest
      * @depends testValidateRenterForScreeningRequest
      */
-    public function testCreateReport(Renter $renter, ScreeningRequestRenter $screeningRequestRenter, string $validationResult): int
+    public function testCreateReport(
+        Renter $renter,
+        ScreeningRequestRenter $screeningRequestRenter,
+        string $validationResult,
+    ): int
     {
         self::$client->createReport($screeningRequestRenter->getScreeningRequestRenterId(), $renter);
 
@@ -266,7 +284,10 @@ class IntegrationTest extends TestCase
      * @depends testAddRenterToScreeningRequest
      * @depends testCreateReport
      */
-    public function testGetReportsForLandlord(ScreeningRequestRenter $screeningRequestRenter, int $reportRequestTime)
+    public function testGetReportsForLandlord(
+        ScreeningRequestRenter $screeningRequestRenter,
+        int $reportRequestTime,
+    ): void
     {
         // Reports take some time to finish...
         // Normally we execute this only after receiving a notification from the service
@@ -279,7 +300,7 @@ class IntegrationTest extends TestCase
         $types = [
             RequestedProduct::Credit,
             RequestedProduct::Criminal,
-            RequestedProduct::Eviction
+            RequestedProduct::Eviction,
         ];
 
         foreach ($types as $type) {
@@ -303,7 +324,10 @@ class IntegrationTest extends TestCase
      * @depends testAddRenterToScreeningRequest
      * @depends testCreateReport
      */
-    public function testGetReportsForRenter(ScreeningRequestRenter $screeningRequestRenter, int $reportRequestTime)
+    public function testGetReportsForRenter(
+        ScreeningRequestRenter $screeningRequestRenter,
+        int $reportRequestTime,
+    ): void
     {
         // Reports take some time to finish...
         // Normally we execute this only after receiving a notification from the service
@@ -316,7 +340,7 @@ class IntegrationTest extends TestCase
         $types = [
             RequestedProduct::Credit,
             RequestedProduct::Criminal,
-            RequestedProduct::Eviction
+            RequestedProduct::Eviction,
         ];
 
         foreach ($types as $type) {

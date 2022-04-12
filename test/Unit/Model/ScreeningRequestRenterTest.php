@@ -2,10 +2,11 @@
 
 declare(strict_types = 1);
 
+namespace test\Rentpost\TUShareable\Unit\Model;
+
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Date;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
-use Rentpost\TUShareable\ValidationException;
 
 class ScreeningRequestRenterTest extends TestCase
 {
