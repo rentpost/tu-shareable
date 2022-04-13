@@ -41,6 +41,105 @@ class Client implements ClientInterface
     }
 
 
+    protected function fetchToken(): void
+    {
+        $data = ['clientId' => $this->clientId, 'apiKey' => $this->apiKey];
+        $response = $this->requestJson('POST', 'Tokens', $data, [], false);
+
+        $responseData = $this->decodeJson($response);
+        $this->authToken = $responseData['token'];
+    }
+
+
+    /**
+     * @param string[] $data
+     * @param string[] $headers
+     */
+    protected function requestJson(
+        string $method,
+        string $resource,
+        array $data,
+        array $headers = [],
+        bool $fetchToken = true
+    ): string
+    {
+        $headers['Content-Type'] = 'application/json';
+
+        $json = $this->encodeJson($data);
+
+        return $this->request(
+            $method,
+            $resource,
+            $json,
+            $headers,
+            $fetchToken
+        );
+    }
+
+
+    /**
+     * @param string[] $headers
+     */
+    protected function request(
+        string $method,
+        string $resource,
+        ?string $data = null,
+        array $headers = [],
+        bool $fetchToken = true
+    ): string
+    {
+        // Fetch auth token
+        if (!$this->authToken && $fetchToken) {
+            $this->fetchToken();
+        }
+
+        // Include auth token in headers
+        if ($this->authToken) {
+            $headers['Authorization'] = $this->authToken;
+        }
+
+        $url = $this->baseUrl . $resource;
+        $request = $this->requestFactory->createRequest($method, $url);
+
+        foreach ($headers as $key => $value) {
+            $request = $request->withHeader($key, $value);
+        }
+
+        if ($data) {
+            $request->getBody()->write($data);
+        }
+
+        // Log request
+        $this->logger->debug('Request', [
+            'method' => $method,
+            'url' => $url,
+            'headers' => $headers,
+            'data' => $data,
+        ]);
+
+        try {
+            $response = $this->httpClient->sendRequest($request);
+        } catch (\Throwable $ex) {
+            // Throw our own exception instead
+            throw new ClientException($ex->getMessage(), $ex->getCode(), $ex);
+        }
+
+        $status = $response->getStatusCode();
+        $body = $response->getBody()->getContents();
+
+        $this->logger->debug('Response', [
+            'status' => $status,
+            'body' => $body,
+        ]);
+
+        if ($status >= 200 && $status <= 299) {
+            return $body;
+        }
+
+        throw new ClientException("Received status $status: $body");
+    }
+
+
     /**
      * @return string[]
      */
@@ -432,109 +531,5 @@ class Client implements ClientInterface
         $responseData = $this->decodeJson($response);
 
         return $this->modelFactory->make(Reports::class, $responseData);
-    }
-
-
-    /*
-     * Private functions
-     */
-
-
-    protected function fetchToken(): void
-    {
-        $data = ['clientId' => $this->clientId, 'apiKey' => $this->apiKey];
-        $response = $this->requestJson('POST', 'Tokens', $data, [], false);
-
-        $responseData = $this->decodeJson($response);
-        $this->authToken = $responseData['token'];
-    }
-
-
-    /**
-     * @param string[] $data
-     * @param string[] $headers
-     */
-    protected function requestJson(
-        string $method,
-        string $resource,
-        array $data,
-        array $headers = [],
-        bool $fetchToken = true
-    ): string
-    {
-        $headers['Content-Type'] = 'application/json';
-
-        $json = $this->encodeJson($data);
-
-        return $this->request(
-            $method,
-            $resource,
-            $json,
-            $headers,
-            $fetchToken
-        );
-    }
-
-
-    /**
-     * @param string[] $headers
-     */
-    protected function request(
-        string $method,
-        string $resource,
-        ?string $data = null,
-        array $headers = [],
-        bool $fetchToken = true
-    ): string
-    {
-        // Fetch auth token
-        if (!$this->authToken && $fetchToken) {
-            $this->fetchToken();
-        }
-
-        // Include auth token in headers
-        if ($this->authToken) {
-            $headers['Authorization'] = $this->authToken;
-        }
-
-        $url = $this->baseUrl . $resource;
-        $request = $this->requestFactory->createRequest($method, $url);
-
-        foreach ($headers as $key => $value) {
-            $request = $request->withHeader($key, $value);
-        }
-
-        if ($data) {
-            $request->getBody()->write($data);
-        }
-
-        // Log request
-        $this->logger->debug('Request', [
-            'method' => $method,
-            'url' => $url,
-            'headers' => $headers,
-            'data' => $data,
-        ]);
-
-        try {
-            $response = $this->httpClient->sendRequest($request);
-        } catch (\Throwable $ex) {
-            // Throw our own exception instead
-            throw new ClientException($ex->getMessage(), $ex->getCode(), $ex);
-        }
-
-        $status = $response->getStatusCode();
-        $body = $response->getBody()->getContents();
-
-        $this->logger->debug('Response', [
-            'status' => $status,
-            'body' => $body,
-        ]);
-
-        if ($status >= 200 && $status <= 299) {
-            return $body;
-        }
-
-        throw new ClientException("Received status $status: $body");
     }
 }
