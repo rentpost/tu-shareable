@@ -28,16 +28,18 @@ class Client implements ClientInterface
 
     protected ?string $authToken = null;
 
+    protected ModelFactory $modelFactory;
+
 
     public function __construct(
         protected LoggerInterface $logger,
         protected HttpRequestFactory $requestFactory,
         protected HttpClient $httpClient,
-        protected ModelFactory $modelFactory,
         protected string $baseUrl,
         protected string $clientId,
         protected string $apiKey
     ) {
+        $this->modelFactory = new ModelFactory;
     }
 
 

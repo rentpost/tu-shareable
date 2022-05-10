@@ -25,7 +25,6 @@ use Rentpost\TUShareable\Model\Renter;
 use Rentpost\TUShareable\Model\ScreeningRequest;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 use Rentpost\TUShareable\Model\SocialSecurityNumber;
-use Rentpost\TUShareable\ModelFactory;
 use Rentpost\TUShareable\ReportType;
 use Rentpost\TUShareable\RequestedProduct;
 
@@ -43,15 +42,12 @@ class IntegrationTest extends TestCase
         $requestFactory = new HttpFactory;
         $httpClient = new HttpClient;
 
-        $modelFactory = new ModelFactory;
-
         $config = parse_ini_file(__DIR__ . '/config');
 
         self::$client = new Client(
             $logger,
             $requestFactory,
             $httpClient,
-            $modelFactory,
             $config['url'],
             $config['clientId'],
             $config['apiKey']

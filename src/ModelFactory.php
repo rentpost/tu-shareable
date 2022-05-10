@@ -29,32 +29,6 @@ class ModelFactory
     /**
      * @param string[] $data
      */
-    public function make(string $name, array $data): object
-    {
-        $object = match ($name) {
-            Address::class => $this->makeAddress($data),
-            Bundle::class => $this->makeBundle($data),
-            Exam::class => $this->makeExam($data),
-            Landlord::class => $this->makeLandlord($data),
-            Property::class => $this->makeProperty($data),
-            Renter::class => $this->makeRenter($data),
-            Reports::class => $this->makeReports($data),
-            ScreeningRequest::class => $this->makeScreeningRequest($data),
-            ScreeningRequestRenter::class => $this->makeScreeningRequestRenter($data),
-            default => null
-        };
-
-        if ($object) {
-            return $object;
-        }
-
-        throw new ClientException("Unrecognized class in ModelFactory: $name");
-    }
-
-
-    /**
-     * @param string[] $data
-     */
     protected function makeAddress(array $data): Address
     {
         return new Address(
@@ -195,7 +169,7 @@ class ModelFactory
     /**
      * @param string[] $data
      */
-    public function makeReports(array $data): Reports
+    protected function makeReports(array $data): Reports
     {
         $reports = new Reports($data['reportsExpireNumberOfDays']);
 
@@ -257,5 +231,31 @@ class ModelFactory
         $renter->setScreeningRequestRenterId($data['screeningRequestRenterId'] ?? null);
 
         return $renter;
+    }
+
+
+    /**
+     * @param string[] $data
+     */
+    public function make(string $name, array $data): object
+    {
+        $object = match ($name) {
+            Address::class => $this->makeAddress($data),
+            Bundle::class => $this->makeBundle($data),
+            Exam::class => $this->makeExam($data),
+            Landlord::class => $this->makeLandlord($data),
+            Property::class => $this->makeProperty($data),
+            Renter::class => $this->makeRenter($data),
+            Reports::class => $this->makeReports($data),
+            ScreeningRequest::class => $this->makeScreeningRequest($data),
+            ScreeningRequestRenter::class => $this->makeScreeningRequestRenter($data),
+            default => null
+        };
+
+        if ($object) {
+            return $object;
+        }
+
+        throw new ClientException("Unrecognized class in ModelFactory: $name");
     }
 }
