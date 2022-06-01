@@ -308,7 +308,7 @@ class IntegrationTest extends TestCase
 
             $report = $reports->getReports()[0];
 
-            $this->assertSame(ucfirst($type->value), $report->getProviderName());
+            $this->assertSame(ucfirst($type->name), $report->getProviderName());
 
             // For now just assert the content is long enough rather than parsing the html
             $this->assertGreaterThan(1024, strlen($report->getReportData()));
@@ -348,7 +348,7 @@ class IntegrationTest extends TestCase
 
             $report = $reports->getReports()[0];
 
-            $this->assertSame(ucfirst($type->value), $report->getProviderName());
+            $this->assertSame(ucfirst($type->name), $report->getProviderName());
 
             // For now just assert the content is long enough rather than parsing the html
             $this->assertGreaterThan(1024, strlen($report->getReportData()));

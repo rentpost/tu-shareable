@@ -510,7 +510,7 @@ class Client implements ClientInterface
     ): Reports
     {
         $params = http_build_query([
-            'requestedProduct' => $requestedProduct->value,
+            'requestedProduct' => $requestedProduct->name,
             'reportType' => $reportType->value,
         ]);
 
@@ -557,7 +557,7 @@ class Client implements ClientInterface
         }
 
         $params = http_build_query([
-            'requestedProduct' => $requestedProduct->value,
+            'requestedProduct' => $requestedProduct->name,
             'reportType' => $reportType->value,
         ]);
 
