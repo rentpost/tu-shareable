@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Rentpost\TUShareable;
 
+use ReflectionEnum;
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\Date;
@@ -50,6 +51,12 @@ class ModelFactory
     protected function makeBundle(array $data): Bundle
     {
         return new Bundle($data['bundleId'], $data['name']);
+    }
+
+
+    protected function makeRequestedProduct(string $product): RequestedProduct
+    {
+        return (new ReflectionEnum(RequestedProduct::class))->getCase($product)->getValue();
     }
 
 
@@ -247,6 +254,7 @@ class ModelFactory
             Property::class => $this->makeProperty($data),
             Renter::class => $this->makeRenter($data),
             Reports::class => $this->makeReports($data),
+            RequestedProduct::class => $this->makeRequestedProduct($data[0]),
             ScreeningRequest::class => $this->makeScreeningRequest($data),
             ScreeningRequestRenter::class => $this->makeScreeningRequestRenter($data),
             default => null
