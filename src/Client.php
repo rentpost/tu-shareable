@@ -485,6 +485,24 @@ class Client implements ClientInterface
     }
 
 
+    /**
+     * Gets a list of Products available
+     *
+     * @return string[]
+     */
+    public function getReportsAvailableForLandlord(
+        int $screeningRequestRenterId,
+    ): array
+    {
+        $response = $this->request(
+            'GET',
+            "Landlords/ScreeningRequestRenters/$screeningRequestRenterId/Reports/Names"
+        );
+
+        return $this->decodeJson($response);
+    }
+
+
     public function getReportsForLandlord(
         int $screeningRequestRenterId,
         RequestedProduct $requestedProduct,
@@ -504,6 +522,24 @@ class Client implements ClientInterface
         $responseData = $this->decodeJson($response);
 
         return $this->modelFactory->make(Reports::class, $responseData);
+    }
+
+
+    /**
+     * Gets a list of Products available
+     *
+     * @return string[]
+     */
+    public function getReportsAvailableForRenter(
+        int $screeningRequestRenterId,
+    ): array
+    {
+        $response = $this->request(
+            'GET',
+            "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports/Names"
+        );
+
+        return $this->decodeJson($response);
     }
 
 
