@@ -502,7 +502,7 @@ class Client implements ClientInterface
         $results = [];
 
         foreach ($this->decodeJson($response) as $productName) {
-            $results[] = $this->modelFactory->make(ScreeningRequestRenter::class, [$productName]);
+            $results[] = $this->modelFactory->make(RequestedProduct::class, [$productName]);
         }
 
         return $results;
@@ -548,7 +548,7 @@ class Client implements ClientInterface
         $results = [];
 
         foreach ($this->decodeJson($response) as $productName) {
-            $results[] = $this->modelFactory->make(ScreeningRequestRenter::class, [$productName]);
+            $results[] = $this->modelFactory->make(RequestedProduct::class, [$productName]);
         }
 
         return $results;
