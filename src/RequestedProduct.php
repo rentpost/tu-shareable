@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace Rentpost\TUShareable;
 
-enum RequestedProduct
+enum RequestedProduct: string
 {
-    case Credit;
-    case Criminal;
-    case IdReport;
-    case Eviction;
+    case Credit = 'Credit';
+    case Criminal = 'Criminal';
+    case Eviction = 'Eviction';
+    case IdReport = 'ID Report';
 }
