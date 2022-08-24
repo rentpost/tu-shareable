@@ -8,6 +8,6 @@ enum RequestedProduct: string
 {
     case Credit = 'Credit';
     case Criminal = 'Criminal';
-    case Eviction = 'Eviction';
+    case Eviction = 'Eviction Proceedings';
     case IdReport = 'ID Report';
 }
