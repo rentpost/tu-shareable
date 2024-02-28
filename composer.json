@@ -2,6 +2,7 @@
     "name": "rentpost/tu-shareable",
     "description": "Client library for TransUnion - ShareAble for Rentals API.",
     "license": "proprietary",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Pekka Laiho",
@@ -13,7 +14,7 @@
         }
     ],
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.1",
 
         "psr/log": "^3.0",
         "psr/http-client": "^1.0",

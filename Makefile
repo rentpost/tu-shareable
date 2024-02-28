@@ -24,10 +24,20 @@ help:
 ##
 
 
-init:           ## Initializes the project and all dependencies
+init:               ## Initializes the project and all dependencies
 	@composer install
 
 
-test:           ## Executes the test suites
+install-vendors:    ## Installs vendor dependencies
+	$(call checkExecutables, composer)
+	@composer install
+
+
+update-vendors:     ## Updates vendor dependencies
+	$(call checkExecutables, composer)
+	@composer update
+
+
+test:               ## Executes the test suites
 	$(call checkExecutables, phpunit)
 	@phpunit
