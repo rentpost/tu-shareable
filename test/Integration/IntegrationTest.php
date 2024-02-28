@@ -50,7 +50,8 @@ class IntegrationTest extends TestCase
             $httpClient,
             $config['url'],
             $config['clientId'],
-            $config['apiKey']
+            $config['apiKeyOne'],
+            $config['apiKeyTwo'],
         );
     }
 

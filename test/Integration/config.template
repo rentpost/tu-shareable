@@ -1,3 +1,6 @@
 url="https://rentals-api-ext.shareable.com/v1/"
 clientId=""
-apiKey=""
+
+; API Keys (Only two required, one saved for rotation)
+apiKeyOne=""
+apiKeyTwo=""

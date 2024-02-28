@@ -19,6 +19,9 @@ use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 
 /**
  * Client library for TransUnion - ShareAble for Rentals API.
+ *
+ * @author Pekka Laiho <pekka.i.laiho@gmail.com>
+ * @author Jacob Thomason <jacob@rentpost.com>
  */
 class Client implements ClientInterface
 {
@@ -26,30 +29,38 @@ class Client implements ClientInterface
     use JsonHelper;
 
 
-    protected ?string $authToken = null;
-
     protected ModelFactory $modelFactory;
+    protected ?string $authToken = null;
+    protected ?string $mfaToken = null;
 
 
     public function __construct(
-        protected LoggerInterface $logger,
-        protected HttpRequestFactory $requestFactory,
-        protected HttpClient $httpClient,
-        protected string $baseUrl,
-        protected string $clientId,
-        protected string $apiKey
+        protected readonly LoggerInterface $logger,
+        protected readonly HttpRequestFactory $requestFactory,
+        protected readonly HttpClient $httpClient,
+        protected readonly string $baseUrl,
+        protected readonly string $clientId,
+        protected readonly string $apiKeyOne,
+        protected readonly string $apiKeyTwo,
     ) {
         $this->modelFactory = new ModelFactory;
     }
 
 
-    protected function fetchToken(): void
+    /**
+     * Fetches a new token from Transunion from our keys (auth and MFA)
+     */
+    protected function fetchTokens(): void
     {
-        $data = ['clientId' => $this->clientId, 'apiKey' => $this->apiKey];
+        $data = ['clientId' => $this->clientId, 'apiKey' => $this->apiKeyOne];
         $response = $this->requestJson('POST', 'Tokens', $data, [], false);
-
         $responseData = $this->decodeJson($response);
         $this->authToken = $responseData['token'];
+
+        $data = ['clientId' => $this->clientId, 'apiKey' => $this->apiKeyTwo];
+        $response = $this->requestJson('POST', 'Tokens', $data, [], false);
+        $responseData = $this->decodeJson($response);
+        $this->mfaToken = $responseData['token'];
     }
 
 
@@ -62,7 +73,7 @@ class Client implements ClientInterface
         string $resource,
         array $data,
         array $headers = [],
-        bool $fetchToken = true
+        bool $fetchTokens = true
     ): string
     {
         $headers['Content-Type'] = 'application/json';
@@ -74,7 +85,7 @@ class Client implements ClientInterface
             $resource,
             $json,
             $headers,
-            $fetchToken
+            $fetchTokens,
         );
     }
 
@@ -87,17 +98,18 @@ class Client implements ClientInterface
         string $resource,
         ?string $data = null,
         array $headers = [],
-        bool $fetchToken = true
+        bool $fetchTokens = true,
     ): string
     {
         // Fetch auth token
-        if (!$this->authToken && $fetchToken) {
-            $this->fetchToken();
+        if ((!$this->authToken || !$this->mfaToken) && $fetchTokens) {
+            $this->fetchTokens();
         }
 
         // Include auth token in headers
-        if ($this->authToken) {
+        if ($this->authToken && $this->mfaToken) {
             $headers['Authorization'] = $this->authToken;
+            $headers['MFAAuthorized'] = $this->mfaToken;
         }
 
         $url = $this->baseUrl . $resource;
