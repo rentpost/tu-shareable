@@ -21,7 +21,7 @@ trait Validate
                     EmailValidator::class => new EmailValidator(Email::VALIDATION_MODE_HTML5),
                 ])
             )
-            ->enableAnnotationMapping()
+            ->enableAttributeMapping()
             ->getValidator();
 
         $errors = $validator->validate($this);
