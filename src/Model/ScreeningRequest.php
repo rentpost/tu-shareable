@@ -47,7 +47,7 @@ class ScreeningRequest
         ?Date $createdOn = null,
         ?Date $modifiedOn = null,
         ?string $propertyName = null,
-        ?string $propertySummaryAddress = null
+        ?string $propertySummaryAddress = null,
     ) {
         $this->landlordId = $landlordId;
         $this->propertyId = $propertyId;

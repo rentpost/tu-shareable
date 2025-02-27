@@ -2,8 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit\Model;
+namespace Test\Unit\Rentpost\TUShareable\Model;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Money;
@@ -13,7 +14,33 @@ use Rentpost\TUShareable\ValidationException;
 class PropertyTest extends TestCase
 {
 
-    public function testConstructorAndGetters()
+    protected function makeObject(
+        string $propertyName,
+        bool $bankruptcyCheck = true,
+        int $bankruptcyTimeFrame = 12,
+        int $incomeToRentRatio = 50,
+    ): Property
+    {
+        // Address and Money are tested separately. Here we just give
+        // them valid values for now and focus on testing other properties.
+
+        $rent = new Money('500');
+        $deposit = new Money('1000');
+        $address = new Address('Streetname', 'Apartment', '', '', 'Los Angeles', 'CA', '12345');
+
+        return new Property(
+            $propertyName,
+            $rent,
+            $deposit,
+            $address,
+            $bankruptcyCheck,
+            $bankruptcyTimeFrame,
+            $incomeToRentRatio,
+        );
+    }
+
+
+    public function testConstructorAndGetters(): void
     {
         $property = $this->makeObject('Apartment', true, 20, 90);
         $property->setPropertyId(123);
@@ -48,46 +75,27 @@ class PropertyTest extends TestCase
     }
 
 
-    public function validationProvider()
+    /** @return array<array<int,string>> */
+    public static function validationProvider(): array
     {
         return [
             // No name
             [ '', 'This value should not be blank.' ],
             // Too long name
-            [ 'C1bj6YXjJbGyARqKRljur7mXTUWe1uyWMqECWdCICEWDUv169qU66CT4gztMc9AiRWelsynyT1jMnPsuCz9MfErN9S3XigeDIbJZn', 'This value is too long. It should have 100 characters or less.' ],
+            [
+                'C1bj6YXjJbGyARqKRljur7mXTUWe1uyWMqECWdCICEWDUv169qU66CT4gztMc9AiRWelsynyT1jMnPsuCz9MfErN9S3XigeDIbJZn',
+                'This value is too long. It should have 100 characters or less.',
+            ],
         ];
     }
 
 
-    /**
-     * @dataProvider validationProvider
-     */
-    public function testValidationErrors(string $propertyName, string $errorMessage)
+    #[DataProvider('validationProvider')]
+    public function testValidationErrors(string $propertyName, string $errorMessage): void
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage($errorMessage);
 
         $this->makeObject($propertyName);
-    }
-
-
-    protected function makeObject(string $propertyName, bool $bankruptcyCheck = true, int $bankruptcyTimeFrame = 12, int $incomeToRentRatio = 50): Property
-    {
-        // Address and Money are tested separately. Here we just give
-        // them valid values for now and focus on testing other properties.
-
-        $rent = new Money('500');
-        $deposit = new Money('1000');
-        $address = new Address('Streetname', 'Apartment', '', '', 'Los Angeles', 'CA', '12345');
-
-        return new Property(
-            $propertyName,
-            $rent,
-            $deposit,
-            $address,
-            $bankruptcyCheck,
-            $bankruptcyTimeFrame,
-            $incomeToRentRatio
-        );
     }
 }

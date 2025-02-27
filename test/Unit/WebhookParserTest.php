@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit;
+namespace Test\Unit\Rentpost\TUShareable;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -14,10 +14,10 @@ use Rentpost\TUShareable\WebhookParser;
 class WebhookParserTest extends TestCase
 {
 
-    public function testParseReportDelivery()
+    public function testParseReportDelivery(): void
     {
         $data = json_encode([
-            'ScreeningRequestRenterId' => 12345,
+            'ScreeningRequestRenterId' => 12_345,
             'ReportsDeliveryStatus' => 'Success',
         ]);
 
@@ -26,15 +26,15 @@ class WebhookParserTest extends TestCase
         $result = $parser->parseReportDelivery($request);
 
         $this->assertInstanceOf(WebhookReportDelivery::class, $result);
-        $this->assertSame(12345, $result->getScreeningRequestRenterId());
+        $this->assertSame(12_345, $result->getScreeningRequestRenterId());
         $this->assertSame('Success', $result->getReportsDeliveryStatus());
     }
 
 
-    public function testParseAuthenticationStatus()
+    public function testParseAuthenticationStatus(): void
     {
         $data = json_encode([
-            'ScreeningRequestRenterId' => 12345,
+            'ScreeningRequestRenterId' => 12_345,
             'ManualAuthenticationStatus' => 'Passed',
         ]);
 
@@ -43,7 +43,7 @@ class WebhookParserTest extends TestCase
         $result = $parser->parseAuthenticationStatus($request);
 
         $this->assertInstanceOf(WebhookAuthenticationStatus::class, $result);
-        $this->assertSame(12345, $result->getScreeningRequestRenterId());
+        $this->assertSame(12_345, $result->getScreeningRequestRenterId());
         $this->assertSame('Passed', $result->getManualAuthenticationStatus());
     }
 

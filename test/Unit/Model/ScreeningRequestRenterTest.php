@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit\Model;
+namespace Test\Unit\Rentpost\TUShareable\Model;
 
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Date;
@@ -11,7 +11,34 @@ use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 class ScreeningRequestRenterTest extends TestCase
 {
 
-    public function testConstructorAndGetters()
+    protected function makeObject(
+        int $landlordId,
+        int $renterId,
+        int $bundleId,
+        string $renterRole,
+        ?string $renterStatus = null,
+        ?string $renterFirstName = null,
+        ?string $renterLastName = null,
+        ?string $renterMiddleName = null,
+    ): ScreeningRequestRenter
+    {
+        return new ScreeningRequestRenter(
+            $landlordId,
+            $renterId,
+            $bundleId,
+            $renterRole,
+            $renterStatus,
+            new Date('2022-03-10'),
+            new Date('2022-04-16'),
+            $renterFirstName,
+            $renterLastName,
+            $renterMiddleName,
+            15,
+        );
+    }
+
+
+    public function testConstructorAndGetters(): void
     {
         $renter = $this->makeObject(1, 2, 3, 'Applicant', 'IdentityVerificationPending', 'First', 'Last', 'Middle');
 
@@ -43,25 +70,5 @@ class ScreeningRequestRenterTest extends TestCase
             'renterMiddleName' => 'Middle',
             'reportsExpireNumberOfDays' => 15,
         ], $renter->toArray());
-    }
-
-
-    protected function makeObject(int $landlordId, int $renterId, int $bundleId, string $renterRole,
-        ?string $renterStatus = null, ?string $renterFirstName = null, ?string $renterLastName = null,
-        ?string $renterMiddleName = null): ScreeningRequestRenter
-    {
-        return new ScreeningRequestRenter(
-            $landlordId,
-            $renterId,
-            $bundleId,
-            $renterRole,
-            $renterStatus,
-            new Date('2022-03-10'),
-            new Date('2022-04-16'),
-            $renterFirstName,
-            $renterLastName,
-            $renterMiddleName,
-            15
-        );
     }
 }

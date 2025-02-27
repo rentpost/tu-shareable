@@ -73,7 +73,7 @@ class Client implements ClientInterface
         string $resource,
         array $data,
         array $headers = [],
-        bool $fetchTokens = true
+        bool $fetchTokens = true,
     ): string
     {
         $headers['Content-Type'] = 'application/json';
@@ -412,7 +412,7 @@ class Client implements ClientInterface
         $response = $this->requestJson(
             'POST',
             "ScreeningRequests/$screeningRequestId/ScreeningRequestRenters",
-            $renter->toArray()
+            $renter->toArray(),
         );
 
         $responseData = $this->decodeJson($response);
@@ -432,7 +432,7 @@ class Client implements ClientInterface
         $response = $this->requestJson(
             'POST',
             "ScreeningRequestRenters/$screeningRequestRenterId/Validate",
-            $renter->getPerson()->toArray()
+            $renter->getPerson()->toArray(),
         );
 
         $responseData = $this->decodeJson($response);
@@ -449,7 +449,7 @@ class Client implements ClientInterface
     public function createExam(
         int $screeningRequestRenterId,
         Renter $renter,
-        ?string $externalReferenceNumber = null
+        ?string $externalReferenceNumber = null,
     ): Exam
     {
         $requestData = [
@@ -473,7 +473,7 @@ class Client implements ClientInterface
         $response = $this->requestJson(
             'POST',
             "ScreeningRequestRenters/$screeningRequestRenterId/Exams/$examId/Answers",
-            $answer->toArray()
+            $answer->toArray(),
         );
 
         $responseData = $this->decodeJson($response);
@@ -524,7 +524,7 @@ class Client implements ClientInterface
     public function getReportsForLandlord(
         int $screeningRequestRenterId,
         RequestedProduct $requestedProduct,
-        ReportType $reportType
+        ReportType $reportType,
     ): Reports
     {
         $params = http_build_query([
@@ -534,7 +534,7 @@ class Client implements ClientInterface
 
         $response = $this->request(
             'GET',
-            "Landlords/ScreeningRequestRenters/$screeningRequestRenterId/Reports?" . $params
+            "Landlords/ScreeningRequestRenters/$screeningRequestRenterId/Reports?" . $params,
         );
 
         $responseData = $this->decodeJson($response);
@@ -570,7 +570,7 @@ class Client implements ClientInterface
     public function getReportsForRenter(
         int $screeningRequestRenterId,
         RequestedProduct $requestedProduct,
-        ReportType $reportType
+        ReportType $reportType,
     ): Reports
     {
         // ShareAble documentation:
@@ -587,7 +587,7 @@ class Client implements ClientInterface
 
         $response = $this->request(
             'GET',
-            "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports?" . $params
+            "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports?" . $params,
         );
 
         $responseData = $this->decodeJson($response);

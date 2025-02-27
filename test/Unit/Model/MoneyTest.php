@@ -2,8 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit\Model;
+namespace Test\Unit\Rentpost\TUShareable\Model;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Money;
 use Rentpost\TUShareable\ValidationException;
@@ -11,7 +12,8 @@ use Rentpost\TUShareable\ValidationException;
 class MoneyTest extends TestCase
 {
 
-    public function validProvider()
+    /** @return array<array<string>> */
+    public static function validProvider(): array
     {
         return [
             [ '0' ],
@@ -25,10 +27,8 @@ class MoneyTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider validProvider
-     */
-    public function testValidValues(string $value)
+    #[DataProvider('validProvider')]
+    public function testValidValues(string $value): void
     {
         $money = new Money($value);
 
@@ -36,7 +36,8 @@ class MoneyTest extends TestCase
     }
 
 
-    public function invalidProvider()
+    /** @return array<array<string>> */
+    public static function invalidProvider(): array
     {
         return [
             [ '' ],
@@ -44,15 +45,13 @@ class MoneyTest extends TestCase
             [ '1a2' ],
 
             // too many decimals
-            [ '1.234' ]
+            [ '1.234' ],
         ];
     }
 
 
-    /**
-     * @dataProvider invalidProvider
-     */
-    public function testInvalidValues(string $value)
+    #[DataProvider('invalidProvider')]
+    public function testInvalidValues(string $value): void
     {
         $errorMessage = 'The value is not a valid currency amount.';
 

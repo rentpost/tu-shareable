@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit\Model;
+namespace Test\Unit\Rentpost\TUShareable\Model;
 
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Bundle;
@@ -10,7 +10,7 @@ use Rentpost\TUShareable\Model\Bundle;
 class BundleTest extends TestCase
 {
 
-    public function testConstructorAndGetters()
+    public function testConstructorAndGetters(): void
     {
         $bundle = new Bundle(123, 'Name');
 
@@ -19,7 +19,7 @@ class BundleTest extends TestCase
 
         $this->assertSame([
             'bundleId' => 123,
-            'name' => 'Name'
+            'name' => 'Name',
         ], $bundle->toArray());
     }
 }

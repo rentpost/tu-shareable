@@ -2,12 +2,13 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Integration;
+namespace Test\Integration\Rentpost\TuShareable;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\HttpFactory;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Client;
 use Rentpost\TUShareable\ClientInterface;
@@ -65,7 +66,7 @@ class IntegrationTest extends TestCase
             new Phone('0123456789', 'Home'),
             null,
             new Address('Street', 'Apartment', '', '', 'Los Angeles', 'CA', '12345'),
-            true
+            true,
         );
 
         self::$client->createLandlord($landlord);
@@ -76,9 +77,7 @@ class IntegrationTest extends TestCase
     }
 
 
-    /**
-     * @depends testCreateLandlord
-     */
+    #[Depends('testCreateLandlord')]
     public function testCreateProperty(Landlord $landlord): Property
     {
         $property = new Property(
@@ -88,7 +87,7 @@ class IntegrationTest extends TestCase
             new Address('Street', 'Apartment', '', '', 'Los Angeles', 'CA', '12345'),
             false,
             0,
-            30
+            30,
         );
 
         self::$client->createProperty($landlord->getLandlordId(), $property);
@@ -99,20 +98,18 @@ class IntegrationTest extends TestCase
     }
 
 
-    /**
-     * @depends testCreateLandlord
-     * @depends testCreateProperty
-     */
+    #[Depends('testCreateLandlord')]
+    #[Depends('testCreateProperty')]
     public function testCreateScreeningRequest(Landlord $landlord, Property $property): ScreeningRequest
     {
         $request = new ScreeningRequest(
             $landlord->getLandlordId(),
             $property->getPropertyId(),
-            3, // bundleId
+            1_004, // bundleId
             null,
             null,
             'Apartment 667',
-            'Sacramento, Los Angeles, CA'
+            'Sacramento, Los Angeles, CA',
         );
 
         self::$client->createScreeningRequest($request);
@@ -137,7 +134,7 @@ class IntegrationTest extends TestCase
             new SocialSecurityNumber('666603693'),
             new Date('1947-03-06'),
             new Address('5333 Finsbury Ave', '', '', '', 'Sacramento', 'CA', '95841'),
-            true
+            true,
         );
 
         $renter = new Renter(
@@ -148,7 +145,7 @@ class IntegrationTest extends TestCase
             'PerYear',
             new Money('90000'),
             'Employed',
-            null
+            null,
         );
 
         self::$client->createRenter($renter);
@@ -159,11 +156,9 @@ class IntegrationTest extends TestCase
     }
 
 
-    /**
-     * @depends testCreateLandlord
-     * @depends testCreateScreeningRequest
-     * @depends testCreateRenter
-     */
+    #[Depends('testCreateLandlord')]
+    #[Depends('testCreateScreeningRequest')]
+    #[Depends('testCreateRenter')]
     public function testAddRenterToScreeningRequest(
         Landlord $landlord,
         ScreeningRequest $request,
@@ -179,7 +174,7 @@ class IntegrationTest extends TestCase
             null,
             null,
             'Bonnie',
-            'Adams'
+            'Adams',
         );
 
         self::$client->addRenterToScreeningRequest($request->getScreeningRequestId(), $screeningRequestRenter);
@@ -190,10 +185,8 @@ class IntegrationTest extends TestCase
     }
 
 
-    /**
-     * @depends testCreateRenter
-     * @depends testAddRenterToScreeningRequest
-     */
+    #[Depends('testCreateRenter')]
+    #[Depends('testAddRenterToScreeningRequest')]
     public function testCreateExam(Renter $renter, ScreeningRequestRenter $screeningRequestRenter): Exam
     {
         $exam = self::$client->createExam($screeningRequestRenter->getScreeningRequestRenterId(), $renter);
@@ -205,10 +198,8 @@ class IntegrationTest extends TestCase
     }
 
 
-    /**
-     * @depends testAddRenterToScreeningRequest
-     * @depends testCreateExam
-     */
+    #[Depends('testAddRenterToScreeningRequest')]
+    #[Depends('testCreateExam')]
     public function testAnswerExam(ScreeningRequestRenter $screeningRequestRenter, Exam $exam): Exam
     {
         $answer = new ExamAnswer;
@@ -232,11 +223,9 @@ class IntegrationTest extends TestCase
     }
 
 
-    /**
-     * @depends testCreateRenter
-     * @depends testAddRenterToScreeningRequest
-     * @depends testAnswerExam
-     */
+    #[Depends('testCreateRenter')]
+    #[Depends('testAddRenterToScreeningRequest')]
+    #[Depends('testAnswerExam')]
     public function testValidateRenterForScreeningRequest(
         Renter $renter,
         ScreeningRequestRenter $screeningRequestRenter,
@@ -255,11 +244,9 @@ class IntegrationTest extends TestCase
     }
 
 
-    /**
-     * @depends testCreateRenter
-     * @depends testAddRenterToScreeningRequest
-     * @depends testValidateRenterForScreeningRequest
-     */
+    #[Depends('testCreateRenter')]
+    #[Depends('testAddRenterToScreeningRequest')]
+    #[Depends('testValidateRenterForScreeningRequest')]
     public function testCreateReport(
         Renter $renter,
         ScreeningRequestRenter $screeningRequestRenter,
@@ -277,10 +264,8 @@ class IntegrationTest extends TestCase
     }
 
 
-    /**
-     * @depends testAddRenterToScreeningRequest
-     * @depends testCreateReport
-     */
+    #[Depends('testAddRenterToScreeningRequest')]
+    #[Depends('testCreateReport')]
     public function testGetReportsForLandlord(
         ScreeningRequestRenter $screeningRequestRenter,
         int $reportRequestTime,
@@ -304,7 +289,7 @@ class IntegrationTest extends TestCase
             $reports = self::$client->getReportsForLandlord(
                 $screeningRequestRenter->getScreeningRequestRenterId(),
                 $type,
-                ReportType::Html
+                ReportType::Html,
             );
 
             $report = $reports->getReports()[0];
@@ -312,15 +297,13 @@ class IntegrationTest extends TestCase
             $this->assertSame(ucfirst($type->name), $report->getProviderName());
 
             // For now just assert the content is long enough rather than parsing the html
-            $this->assertGreaterThan(1024, strlen($report->getReportData()));
+            $this->assertGreaterThan(1_024, strlen($report->getReportData()));
         }
     }
 
 
-    /**
-     * @depends testAddRenterToScreeningRequest
-     * @depends testCreateReport
-     */
+    #[Depends('testAddRenterToScreeningRequest')]
+    #[Depends('testCreateReport')]
     public function testGetReportsForRenter(
         ScreeningRequestRenter $screeningRequestRenter,
         int $reportRequestTime,
@@ -344,7 +327,7 @@ class IntegrationTest extends TestCase
             $reports = self::$client->getReportsForRenter(
                 $screeningRequestRenter->getScreeningRequestRenterId(),
                 $type,
-                ReportType::Html
+                ReportType::Html,
             );
 
             $report = $reports->getReports()[0];
@@ -352,7 +335,7 @@ class IntegrationTest extends TestCase
             $this->assertSame(ucfirst($type->name), $report->getProviderName());
 
             // For now just assert the content is long enough rather than parsing the html
-            $this->assertGreaterThan(1024, strlen($report->getReportData()));
+            $this->assertGreaterThan(1_024, strlen($report->getReportData()));
         }
     }
 }

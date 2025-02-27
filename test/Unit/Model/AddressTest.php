@@ -2,8 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit\Model;
+namespace Test\Unit\Rentpost\TUShareable\Model;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\ValidationException;
@@ -11,7 +12,7 @@ use Rentpost\TUShareable\ValidationException;
 class AddressTest extends TestCase
 {
 
-    public function testConstructorAndGetters()
+    public function testConstructorAndGetters(): void
     {
         $addr = new Address('Street 1', 'Suburb 2', 'Apartment 3', 'Room 4', 'Miami', 'FL', '12345');
 
@@ -32,12 +33,15 @@ class AddressTest extends TestCase
             'locality' => 'Miami',
             'region' => 'FL',
             'postalCode' => '12345',
-            'country' => 'US'
+            'country' => 'US',
         ], $addr->toArray());
     }
 
 
-    public function validationProvider()
+    /**
+     * @return array<array<string, string>>
+     */
+    public static function validationProvider(): array
     {
         return [
             // addressLine1 missing
@@ -55,9 +59,10 @@ class AddressTest extends TestCase
 
 
     /**
-     * @dataProvider validationProvider
+     * @param string[] $values
      */
-    public function testValidationErrors(array $values, string $field, string $errorMessage)
+    #[DataProvider('validationProvider')]
+    public function testValidationErrors(array $values, string $field, string $errorMessage): void
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage("Object(Rentpost\TUShareable\Model\Address).$field");

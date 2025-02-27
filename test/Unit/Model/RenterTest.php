@@ -2,8 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit\Model;
+namespace Test\Unit\Rentpost\TUShareable\Model;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Date;
@@ -18,9 +19,62 @@ use Rentpost\TUShareable\ValidationException;
 class RenterTest extends TestCase
 {
 
-    public function testConstructorAndGetters()
+    protected function makePerson(): Person
     {
-        $renter = $this->makeObject('1000', 'PerMonth', '5000', 'PerYear', '12000', 'SelfEmployed', new Date('2022-12-30'));
+        $address = new Address('Streetname', 'Apartment', '', '', 'Los Angeles', 'CA', '12345');
+        $email = new Email('test@example.com');
+        $phone = new Phone('0123456789', 'Home');
+        $ssn = new SocialSecurityNumber('012345789');
+        $date = new Date('1990-03-15');
+
+        return new Person(
+            $email,
+            'First',
+            'Middle',
+            'Last',
+            $phone,
+            $ssn,
+            $date,
+            $address,
+            true,
+        );
+    }
+
+
+    protected function makeObject(
+        string $income,
+        string $incomeFrequency,
+        string $otherIncome,
+        string $otherIncomeFrequency,
+        string $assets,
+        string $employmentStatus,
+        ?Date $multiShareExpirationDate = null,
+    ): Renter
+    {
+        return new Renter(
+            $this->makePerson(),
+            new Money($income),
+            $incomeFrequency,
+            new Money($otherIncome),
+            $otherIncomeFrequency,
+            new Money($assets),
+            $employmentStatus,
+            $multiShareExpirationDate,
+        );
+    }
+
+
+    public function testConstructorAndGetters(): void
+    {
+        $renter = $this->makeObject(
+            '1000',
+            'PerMonth',
+            '5000',
+            'PerYear',
+            '12000',
+            'SelfEmployed',
+            new Date('2022-12-30'),
+        );
 
         $this->assertInstanceOf(Date::class, $renter->getMultiShareExpirationDate());
         $this->assertInstanceOf(Money::class, $renter->getIncome());
@@ -66,7 +120,8 @@ class RenterTest extends TestCase
     }
 
 
-    public function validationProvider()
+    /** @return array<string|null>[] */
+    public static function validationProvider(): array
     {
         return [
             // Invalid income frequency
@@ -82,57 +137,31 @@ class RenterTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider validationProvider
-     */
-    public function testValidationErrors(string $income, string $incomeFrequency, string $otherIncome,
-        string $otherIncomeFrequency, string $assets, string $employmentStatus,
-        ?Date $multiShareExpirationDate, string $errorMessage, string $fieldname)
+    #[DataProvider('validationProvider')]
+    public function testValidationErrors(
+        string $income,
+        string $incomeFrequency,
+        string $otherIncome,
+        string $otherIncomeFrequency,
+        string $assets,
+        string $employmentStatus,
+        ?Date $multiShareExpirationDate,
+        string $errorMessage,
+        string $fieldname,
+    ): void
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage($errorMessage);
         $this->expectExceptionMessage(".$fieldname");
 
-        $this->makeObject($income, $incomeFrequency, $otherIncome, $otherIncomeFrequency, $assets,
-            $employmentStatus, $multiShareExpirationDate);
-    }
-
-
-    protected function makePerson(): Person
-    {
-        $address = new Address('Streetname', 'Apartment', '', '', 'Los Angeles', 'CA', '12345');
-        $email = new Email('test@example.com');
-        $phone = new Phone('0123456789', 'Home');
-        $ssn = new SocialSecurityNumber('012345789');
-        $date = new Date('1990-03-15');
-
-        return new Person(
-            $email,
-            'First',
-            'Middle',
-            'Last',
-            $phone,
-            $ssn,
-            $date,
-            $address,
-            true
-        );
-    }
-
-
-    protected function makeObject(string $income, string $incomeFrequency, string $otherIncome,
-        string $otherIncomeFrequency, string $assets, string $employmentStatus,
-        ?Date $multiShareExpirationDate = null): Renter
-    {
-        return new Renter(
-            $this->makePerson(),
-            new Money($income),
+        $this->makeObject(
+            $income,
             $incomeFrequency,
-            new Money($otherIncome),
+            $otherIncome,
             $otherIncomeFrequency,
-            new Money($assets),
+            $assets,
             $employmentStatus,
-            $multiShareExpirationDate
+            $multiShareExpirationDate,
         );
     }
 }
