@@ -16,7 +16,7 @@ class EmailTest extends TestCase
     {
         $email = new Email('test@example.com');
 
-        $this->assertSame('test@example.com', $email->getAddress());
+        $this->assertSame('test@example.com', $email->getValue());
     }
 
 

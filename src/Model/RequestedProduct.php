@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Rentpost\TUShareable;
+namespace Rentpost\TUShareable\Model;
 
 enum RequestedProduct: string
 {

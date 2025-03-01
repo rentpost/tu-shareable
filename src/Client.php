@@ -7,13 +7,17 @@ namespace Rentpost\TUShareable;
 use Psr\Http\Client\ClientInterface as HttpClient;
 use Psr\Http\Message\RequestFactoryInterface as HttpRequestFactory;
 use Psr\Log\LoggerInterface;
+use Rentpost\TUShareable\Model\Attestation;
 use Rentpost\TUShareable\Model\Bundle;
+use Rentpost\TUShareable\Model\CultureCode;
 use Rentpost\TUShareable\Model\Exam;
 use Rentpost\TUShareable\Model\ExamAnswer;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
 use Rentpost\TUShareable\Model\Reports;
+use Rentpost\TUShareable\Model\ReportType;
+use Rentpost\TUShareable\Model\RequestedProduct;
 use Rentpost\TUShareable\Model\ScreeningRequest;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 
@@ -29,7 +33,6 @@ class Client implements ClientInterface
     use JsonHelper;
 
 
-    protected ModelFactory $modelFactory;
     protected ?string $authToken = null;
     protected ?string $mfaToken = null;
 
@@ -42,9 +45,7 @@ class Client implements ClientInterface
         protected readonly string $clientId,
         protected readonly string $apiKeyOne,
         protected readonly string $apiKeyTwo,
-    ) {
-        $this->modelFactory = new ModelFactory;
-    }
+    ) {}
 
 
     /**
@@ -71,7 +72,7 @@ class Client implements ClientInterface
     protected function requestJson(
         string $method,
         string $resource,
-        array $data,
+        array $data = [],
         array $headers = [],
         bool $fetchTokens = true,
     ): string
@@ -155,6 +156,16 @@ class Client implements ClientInterface
 
 
     /**
+     * Registers the partner with TransUnion
+     * This is only required to be called once
+     */
+    public function register(): void
+    {
+        $this->requestJson('PUT', 'ApiRegistration/Register');
+    }
+
+
+    /**
      * @return string[]
      */
     public function getStatus(): array
@@ -176,7 +187,7 @@ class Client implements ClientInterface
         $list = [];
 
         foreach ($rows as $row) {
-            $list[] = $this->modelFactory->make(Bundle::class, $row);
+            $list[] = Bundle::fromArray($row);
         }
 
         return $list;
@@ -194,7 +205,7 @@ class Client implements ClientInterface
 
         $data = $this->decodeJson($response);
 
-        return $this->modelFactory->make(Landlord::class, $data);
+        return Landlord::fromArray($data);
     }
 
 
@@ -210,7 +221,7 @@ class Client implements ClientInterface
 
     public function updateLandlord(Landlord $landlord): void
     {
-        $this->requestJson('PUT', 'Landlords', $landlord->toArray());
+        $this->requestJson('PUT', "Landlords/{$landlord->getLandlordId()}", $landlord->toArray());
     }
 
 
@@ -225,7 +236,7 @@ class Client implements ClientInterface
 
         $data = $this->decodeJson($response);
 
-        return $this->modelFactory->make(Property::class, $data);
+        return Property::fromArray($data);
     }
 
 
@@ -246,7 +257,7 @@ class Client implements ClientInterface
         $results = [];
 
         foreach ($data as $p) {
-            $results[] = $this->modelFactory->make(Property::class, $p);
+            $results[] = Property::fromArray($p);
         }
 
         return $results;
@@ -265,7 +276,11 @@ class Client implements ClientInterface
 
     public function updateProperty(int $landlordId, Property $property): void
     {
-        $this->requestJson('PUT', "Landlords/$landlordId/Properties", $property->toArray());
+        $this->requestJson(
+            'PUT',
+            "Landlords/$landlordId/Properties/{$property->getPropertyId()}",
+            $property->toArray(),
+        );
     }
 
 
@@ -280,7 +295,7 @@ class Client implements ClientInterface
 
         $data = $this->decodeJson($response);
 
-        return $this->modelFactory->make(Renter::class, $data);
+        return Renter::fromArray($data);
     }
 
 
@@ -296,7 +311,7 @@ class Client implements ClientInterface
 
     public function updateRenter(Renter $renter): void
     {
-        $this->requestJson('PUT', 'Renters', $renter->toArray());
+        $this->requestJson('PUT', "Renters/{$renter->getRenterId()}", $renter->toArray());
     }
 
 
@@ -311,14 +326,18 @@ class Client implements ClientInterface
 
         $data = $this->decodeJson($response);
 
-        return $this->modelFactory->make(ScreeningRequest::class, $data);
+        return ScreeningRequest::fromArray($data);
     }
 
 
     /**
      * @return ScreeningRequest[]
      */
-    public function getScreeningRequestsForLandlord(int $landlordId, int $pageNumber = 1, int $pageSize = 10): array
+    public function getScreeningRequestsForLandlord(
+        int $landlordId,
+        int $pageNumber = 1,
+        int $pageSize = 10,
+    ): array
     {
         $params = http_build_query([
             'PageNumber' => $pageNumber,
@@ -332,7 +351,7 @@ class Client implements ClientInterface
         $results = [];
 
         foreach ($data as $sr) {
-            $results[] = $this->modelFactory->make(ScreeningRequest::class, $sr);
+            $results[] = ScreeningRequest::fromArray($sr);
         }
 
         return $results;
@@ -342,7 +361,11 @@ class Client implements ClientInterface
     /**
      * @return ScreeningRequest[]
      */
-    public function getScreeningRequestsForRenter(int $renterId, int $pageNumber = 1, int $pageSize = 10): array
+    public function getScreeningRequestsForRenter(
+        int $renterId,
+        int $pageNumber = 1,
+        int $pageSize = 10,
+    ): array
     {
         $params = http_build_query([
             'PageNumber' => $pageNumber,
@@ -356,16 +379,24 @@ class Client implements ClientInterface
         $results = [];
 
         foreach ($data as $sr) {
-            $results[] = $this->modelFactory->make(ScreeningRequest::class, $sr);
+            $results[] = ScreeningRequest::fromArray($sr);
         }
 
         return $results;
     }
 
 
-    public function createScreeningRequest(ScreeningRequest $request): void
+    public function createScreeningRequest(
+        int $landlordId,
+        int $propertyId,
+        ScreeningRequest $request,
+    ): void
     {
-        $response = $this->requestJson('POST', 'ScreeningRequests', $request->toArray());
+        $response = $this->requestJson(
+            'POST',
+            "Landlords/{$landlordId}/Properties/{$propertyId}/ScreeningRequests",
+            $request->toArray(),
+        );
 
         $responseData = $this->decodeJson($response);
 
@@ -384,7 +415,7 @@ class Client implements ClientInterface
 
         $responseData = $this->decodeJson($response);
 
-        return $this->modelFactory->make(ScreeningRequestRenter::class, $responseData);
+        return ScreeningRequestRenter::fromArray($responseData);
     }
 
 
@@ -393,31 +424,39 @@ class Client implements ClientInterface
      */
     public function getRentersForScreeningRequest(int $screeningRequestId): array
     {
-        $response = $this->request('GET', "ScreeningRequests/$screeningRequestId/ScreeningRequestRenters");
+        $response = $this->request(
+            'GET',
+            "ScreeningRequests/$screeningRequestId/ScreeningRequestRenters",
+        );
 
         $data = $this->decodeJson($response);
 
         $results = [];
 
         foreach ($data as $sr) {
-            $results[] = $this->modelFactory->make(ScreeningRequestRenter::class, $sr);
+            $results[] = ScreeningRequestRenter::fromArray($sr);
         }
 
         return $results;
     }
 
 
-    public function addRenterToScreeningRequest(int $screeningRequestId, ScreeningRequestRenter $renter): void
+    public function addRenterToScreeningRequest(
+        int $screeningRequestId,
+        ScreeningRequestRenter $screeningRequestRenter,
+    ): ScreeningRequestRenter
     {
         $response = $this->requestJson(
             'POST',
-            "ScreeningRequests/$screeningRequestId/ScreeningRequestRenters",
-            $renter->toArray(),
+            "ScreeningRequests/$screeningRequestId/Renters/{$screeningRequestRenter->getRenterId()}/ScreeningRequestRenters",
+            $screeningRequestRenter->toArray(), // No clue on this - docs don't say it's needed, but it is
         );
 
         $responseData = $this->decodeJson($response);
 
-        $renter->setScreeningRequestRenterId($responseData['screeningRequestRenterId']);
+        $screeningRequestRenter->setScreeningRequestRenterId($responseData['screeningRequestRenterId']);
+
+        return $screeningRequestRenter;
     }
 
 
@@ -427,7 +466,10 @@ class Client implements ClientInterface
     }
 
 
-    public function validateRenterForScreeningRequest(int $screeningRequestRenterId, Renter $renter): string
+    public function validateRenterForScreeningRequest(
+        int $screeningRequestRenterId,
+        Renter $renter,
+    ): string
     {
         $response = $this->requestJson(
             'POST',
@@ -442,6 +484,51 @@ class Client implements ClientInterface
 
 
     /*
+     * Attestations
+     */
+
+
+    /** @return Attestation[] */
+    public function getAttestationsForProperty(int $landlordId, int $propertyId): array
+    {
+        $response = $this->requestJson(
+            'POST',
+            "Landlords/{$landlordId}/Properties/{$propertyId}/Attestations",
+        );
+
+        $data = $this->decodeJson($response);
+
+        $results = [];
+
+        foreach ($data['attestations'] as $attestation) {
+            $results[] = Attestation::fromArray($attestation);
+        }
+
+        return $results;
+    }
+
+
+     /** @return Attestation[] */
+    public function getAttestationsForRenter(int $renterId, int $screeningRequestId): array
+    {
+        $response = $this->requestJson(
+            'POST',
+            "Renters/{$renterId}/ScreeningRequest/{$screeningRequestId}/Attestations",
+        );
+
+        $data = $this->decodeJson($response);
+
+        $results = [];
+
+        foreach ($data['attestations'] as $attestation) {
+            $results[] = Attestation::fromArray($attestation);
+        }
+
+        return $results;
+    }
+
+
+    /*
      * Exams and Answers
      */
 
@@ -449,36 +536,45 @@ class Client implements ClientInterface
     public function createExam(
         int $screeningRequestRenterId,
         Renter $renter,
-        ?string $externalReferenceNumber = null,
+        CultureCode $cultureCode,
     ): Exam
     {
-        $requestData = [
-            'person' => $renter->getPerson()->toArray(),
-        ];
+        $requestData = $renter->getPerson()->toArray();
 
-        if ($externalReferenceNumber) {
-            $requestData['externalReferenceNumber'] = $externalReferenceNumber;
-        }
+        $requestData['cultureCode'] = $cultureCode->value;
 
-        $response = $this->requestJson('POST', "ScreeningRequestRenters/$screeningRequestRenterId/Exams", $requestData);
-
-        $responseData = $this->decodeJson($response);
-
-        return $this->modelFactory->make(Exam::class, $responseData);
-    }
-
-
-    public function answerExam(int $screeningRequestRenterId, int $examId, ExamAnswer $answer): Exam
-    {
         $response = $this->requestJson(
             'POST',
-            "ScreeningRequestRenters/$screeningRequestRenterId/Exams/$examId/Answers",
-            $answer->toArray(),
+            "ScreeningRequestRenters/{$screeningRequestRenterId}/Exams",
+            $requestData,
         );
 
         $responseData = $this->decodeJson($response);
 
-        return $this->modelFactory->make(Exam::class, $responseData);
+        return Exam::fromArray($responseData);
+    }
+
+
+    public function answerExam(
+        int $screeningRequestRenterId,
+        int $examId,
+        ExamAnswer $answer,
+        CultureCode $cultureCode,
+    ): Exam
+    {
+        $requestData = $answer->toArray();
+
+        $requestData['cultureCode'] = $cultureCode->value;
+
+        $response = $this->requestJson(
+            'POST',
+            "ScreeningRequestRenters/$screeningRequestRenterId/Exams/$examId/Answers",
+            $requestData,
+        );
+
+        $responseData = $this->decodeJson($response);
+
+        return Exam::fromArray($responseData);
     }
 
 
@@ -489,11 +585,11 @@ class Client implements ClientInterface
 
     public function createReport(int $screeningRequestRenterId, Renter $renter): void
     {
-        $requestData = [
-            'person' => $renter->getPerson()->toArray(),
-        ];
-
-        $this->requestJson('POST', "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports", $requestData);
+        $this->requestJson(
+            'POST',
+            "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports",
+            $renter->getPerson()->toArray(),
+        );
     }
 
 
@@ -508,13 +604,13 @@ class Client implements ClientInterface
     {
         $response = $this->request(
             'GET',
-            "Landlords/ScreeningRequestRenters/$screeningRequestRenterId/Reports/Names"
+            "Landlords/ScreeningRequestRenters/$screeningRequestRenterId/Reports/Names",
         );
 
         $results = [];
 
         foreach ($this->decodeJson($response) as $productName) {
-            $results[] = $this->modelFactory->make(RequestedProduct::class, [$productName]);
+            $results[] = (new \ReflectionEnum(RequestedProduct::class))->getCase($productName)->getValue();
         }
 
         return $results;
@@ -539,7 +635,7 @@ class Client implements ClientInterface
 
         $responseData = $this->decodeJson($response);
 
-        return $this->modelFactory->make(Reports::class, $responseData);
+        return Reports::fromArray($responseData);
     }
 
 
@@ -554,13 +650,13 @@ class Client implements ClientInterface
     {
         $response = $this->request(
             'GET',
-            "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports/Names"
+            "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports/Names",
         );
 
         $results = [];
 
         foreach ($this->decodeJson($response) as $productName) {
-            $results[] = $this->modelFactory->make(RequestedProduct::class, [$productName]);
+            $results[] = (new \ReflectionEnum(RequestedProduct::class))->getCase($productName)->getValue();
         }
 
         return $results;
@@ -592,6 +688,6 @@ class Client implements ClientInterface
 
         $responseData = $this->decodeJson($response);
 
-        return $this->modelFactory->make(Reports::class, $responseData);
+        return Reports::fromArray($responseData);
     }
 }

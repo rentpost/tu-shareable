@@ -10,24 +10,15 @@ namespace Rentpost\TUShareable\Model;
 class ExamQuestion
 {
 
-    protected string $questionKeyName;
-
-    protected string $questionDisplayName;
-
-    protected string $type;
-
-    /**
-     * @var ExamQuestionAnswer[]
-     */
-    protected array $choices = [];
+    /** @var ExamQuestionAnswer[] */
+    private array $choices = [];
 
 
-    public function __construct(string $questionKeyName, string $questionDisplayName, string $type)
-    {
-        $this->questionKeyName = $questionKeyName;
-        $this->questionDisplayName = $questionDisplayName;
-        $this->type = $type;
-    }
+    public function __construct(
+        private string $questionKeyName,
+        private string $questionDisplayName,
+        private string $type,
+    ) {}
 
 
     public function addChoice(ExamQuestionAnswer $answer): self
@@ -56,9 +47,7 @@ class ExamQuestion
     }
 
 
-    /**
-     * @return ExamQuestionAnswer[]
-     */
+    /** @return ExamQuestionAnswer[] */
     public function getChoices(): array
     {
         return $this->choices;

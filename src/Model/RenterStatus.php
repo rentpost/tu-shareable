@@ -1,0 +1,18 @@
+<?php
+
+declare(strict_types = 1);
+
+namespace Rentpost\TUShareable\Model;
+
+enum RenterStatus: string
+{
+    case IdentityVerificationPending = 'IdentityVerificationPending';
+    case ScreeningRequestCanceled = 'ScreeningRequestCanceled';
+    case ReadyForReportRequest = 'ReadyForReportRequest';
+    case PaymentFailure = 'PaymentFailure';
+    case ReportsDeliveryInProgress = 'ReportsDeliveryInProgress';
+    case ReportsDeliveryFailed = 'ReportsDeliveryFailed';
+    case ReportsDeliverySuccess = 'ReportsDeliverySuccess';
+    case RetryLimitExceeded = 'RetryLimitExceeded';
+    case ScreeningRequestExpired = 'ScreeningRequestExpired';
+}

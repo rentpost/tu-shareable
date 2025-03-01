@@ -10,10 +10,8 @@ namespace Rentpost\TUShareable\Model;
 class ExamAnswer
 {
 
-    /**
-     * @var array[]
-     */
-    protected array $answers = [];
+    /** @var array<array<ExamQuestion, ExamQuestionAnswer>> */
+    private array $answers = [];
 
 
     public function addQuestionAnswer(ExamQuestion $question, ExamQuestionAnswer $answer): self
@@ -27,9 +25,7 @@ class ExamAnswer
     }
 
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function toArray(): array
     {
         $results = [];

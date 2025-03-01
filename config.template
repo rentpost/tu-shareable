@@ -1,4 +1,4 @@
-url="https://rentals-api-ext.shareable.com/v1/"
+url="https://rentals-api-ext.shareable.com/v3/"
 clientId=""
 
 ; API Keys (Only two required, one saved for rotation)

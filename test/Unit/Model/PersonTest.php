@@ -30,7 +30,7 @@ class PersonTest extends TestCase
         $address = new Address('Streetname', 'Apartment', '', '', 'Los Angeles', 'CA', '12345');
         $email = new Email('test@example.com');
         $phone = new Phone('0123456789', 'Home');
-        $ssn = new SocialSecurityNumber('012345789');
+        $nationalId = new SocialSecurityNumber('012345789');
         $date = new Date('1990-03-15');
 
         return new Person(
@@ -39,7 +39,7 @@ class PersonTest extends TestCase
             $middleName,
             $lastName,
             $phone,
-            $ssn,
+            $nationalId,
             $date,
             $address,
             $acceptedTerms,
@@ -62,7 +62,7 @@ class PersonTest extends TestCase
         $this->assertInstanceOf(Email::class, $person->getEmail());
         $this->assertInstanceOf(Address::class, $person->getHomeAddress());
         $this->assertInstanceOf(Phone::class, $person->getPhone());
-        $this->assertInstanceOf(SocialSecurityNumber::class, $person->getSocialSecurityNumber());
+        $this->assertInstanceOf(SocialSecurityNumber::class, $person->getNationalId());
 
         $this->assertSame([
             'personId' => 123,
@@ -72,7 +72,7 @@ class PersonTest extends TestCase
             'lastName' => 'Last',
             'phoneNumber' => '0123456789',
             'phoneType' => 'Home',
-            'socialSecurityNumber' => '012345789',
+            'nationalId' => '012345789',
             'dateOfBirth' => '1990-03-15',
             'homeAddress' => [
                 'addressLine1' => 'Streetname',

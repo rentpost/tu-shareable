@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types = 1);
+
+require __DIR__ . '/bootstrap.php';
+
+$client = getShareableClient();
+
+echo 'Checking Transunion API v3 status...' . PHP_EOL;
+echo '----------------------------------------' . PHP_EOL;
+
+$status = $client->getStatus();
+
+echo $status['title'] . PHP_EOL;
+echo "{$status['description']} {$status['copyright']}" . PHP_EOL;
+echo "version: " . $status['version'] . PHP_EOL;

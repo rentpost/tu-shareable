@@ -15,53 +15,39 @@ class Renter
     use Validate;
 
 
-    #[Assert\NotBlank]
-    protected Person $person;
-
-    #[Assert\NotBlank]
-    protected Money $income;
-
-    #[Assert\NotBlank]
-    #[Assert\Choice(['PerMonth', 'PerYear'])]
-    protected string $incomeFrequency;
-
-    #[Assert\NotBlank]
-    protected Money $otherIncome;
-
-    #[Assert\NotBlank]
-    #[Assert\Choice(['PerMonth', 'PerYear'])]
-    protected string $otherIncomeFrequency;
-
-    #[Assert\NotBlank]
-    protected Money $assets;
-
-    #[Assert\NotBlank]
-    #[Assert\Choice(['NotEmployed', 'Employed', 'SelfEmployed', 'Student'])]
-    protected string $employmentStatus;
-
-    protected ?Date $multiShareExpirationDate;
-
-
     public function __construct(
-        Person $person,
-        Money $income,
-        string $incomeFrequency,
-        Money $otherIncome,
-        string $otherIncomeFrequency,
-        Money $assets,
-        string $employmentStatus,
-        ?Date $multiShareExpirationDate
-    ) {
-        $this->person = $person;
-        $this->income = $income;
-        $this->incomeFrequency = $incomeFrequency;
-        $this->otherIncome = $otherIncome;
-        $this->otherIncomeFrequency = $otherIncomeFrequency;
-        $this->assets = $assets;
-        $this->employmentStatus = $employmentStatus;
-        $this->multiShareExpirationDate = $multiShareExpirationDate;
+        #[Assert\NotBlank]
+        private Person $person,
 
+        #[Assert\NotBlank]
+        private Money $income,
+
+        #[Assert\NotBlank]
+        #[Assert\Choice(['PerMonth', 'PerYear'])]
+        private string $incomeFrequency,
+
+        #[Assert\NotBlank]
+        private Money $otherIncome,
+
+        #[Assert\NotBlank]
+        #[Assert\Choice(['PerMonth', 'PerYear'])]
+        private string $otherIncomeFrequency,
+
+        #[Assert\NotBlank]
+        private Money $assets,
+
+        private EmploymentStatus $employmentStatus,
+
+        private ?Date $multiShareExpirationDate = null,
+    ) {
         $this->validate();
+    }
+
+
+    // For convenience, id is stored in Person
+    public function setRenterId(?int $renterId): void
+    {
+        $this->person->setPersonId($renterId);
     }
 
 
@@ -78,9 +64,21 @@ class Renter
     }
 
 
+    public function setIncome(Money $income): void
+    {
+        $this->income = $income;
+    }
+
+
     public function getIncome(): Money
     {
         return $this->income;
+    }
+
+
+    public function setIncomeFrequency(string $incomeFrequency): void
+    {
+        $this->incomeFrequency = $incomeFrequency;
     }
 
 
@@ -90,9 +88,21 @@ class Renter
     }
 
 
+    public function setOtherIncome(Money $otherIncome): void
+    {
+        $this->otherIncome = $otherIncome;
+    }
+
+
     public function getOtherIncome(): Money
     {
         return $this->otherIncome;
+    }
+
+
+    public function setOtherIncomeFrequency(string $otherIncomeFrequency): void
+    {
+        $this->otherIncomeFrequency = $otherIncomeFrequency;
     }
 
 
@@ -102,15 +112,33 @@ class Renter
     }
 
 
+    public function setAssets(Money $assets): void
+    {
+        $this->assets = $assets;
+    }
+
+
     public function getAssets(): Money
     {
         return $this->assets;
     }
 
 
-    public function getEmploymentStatus(): string
+    public function setEmploymentStatus(EmploymentStatus $employmentStatus): void
+    {
+        $this->employmentStatus = $employmentStatus;
+    }
+
+
+    public function getEmploymentStatus(): EmploymentStatus
     {
         return $this->employmentStatus;
+    }
+
+
+    public function setMultiShareExpirationDate(?Date $multiShareExpirationDate): void
+    {
+        $this->multiShareExpirationDate = $multiShareExpirationDate;
     }
 
 
@@ -120,31 +148,44 @@ class Renter
     }
 
 
-    // For convenience, id is stored in Person
-    public function setRenterId(?int $renterId): void
-    {
-        $this->person->setPersonId($renterId);
-    }
-
-
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function toArray(): array
     {
-        $array = ['person' => $this->person->toArray()];
+        $array = $this->person->toArray();
 
         $array['income'] = $this->income->getValue();
         $array['incomeFrequency'] = $this->incomeFrequency;
         $array['otherIncome'] = $this->otherIncome->getValue();
         $array['otherIncomeFrequency'] = $this->otherIncomeFrequency;
         $array['assets'] = $this->assets->getValue();
-        $array['employmentStatus'] = $this->employmentStatus;
+        $array['employmentStatus'] = $this->employmentStatus->name;
 
         if ($this->multiShareExpirationDate) {
             $array['multiShareExpirationDate'] = $this->multiShareExpirationDate->getValue();
         }
 
         return $array;
+    }
+
+
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $msex = $data['multiShareExpirationDate'] ?? null;
+
+        $renter = new self(
+            Person::fromArray($data),
+            new Money((string)$data['income']),
+            $data['incomeFrequency'],
+            new Money((string)$data['otherIncome']),
+            $data['otherIncomeFrequency'],
+            new Money((string)$data['assets']),
+            EmploymentStatus::from($data['employmentStatus']),
+            $msex ? new Date($msex) : null,
+        );
+
+        $renter->setRenterId($data['renterId'] ?? null);
+
+        return $renter;
     }
 }

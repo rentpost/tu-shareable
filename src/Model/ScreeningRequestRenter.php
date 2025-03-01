@@ -15,65 +15,36 @@ class ScreeningRequestRenter
     use Validate;
 
 
-    protected ?int $screeningRequestRenterId = null;
-
-    #[Assert\NotBlank]
-    protected int $landlordId;
-
-    #[Assert\NotBlank]
-    protected int $renterId;
-
-    #[Assert\NotBlank]
-    protected int $bundleId;
-
-    #[Assert\NotBlank]
-    #[Assert\Choice(['Applicant', 'CoSigner'])]
-    protected string $renterRole;
-
-    // IdentityVerificationPending, ScreeningRequestCanceled, ReadyForReportRequest, PaymentFailure,
-    // ReportsDeliveryInProgress, ReportsDeliveryFailed, ReportsDeliverySuccess, RetryLimitExceeded,
-    // ScreeningRequestExpired
-    protected ?string $renterStatus;
-
-    protected ?Date $createdOn;
-
-    protected ?Date $modifiedOn;
-
-    protected ?string $renterFirstName;
-
-    protected ?string $renterLastName;
-
-    protected ?string $renterMiddleName;
-
-    protected ?int $reportsExpireNumberOfDays;
+    private ?int $screeningRequestRenterId = null;
 
 
     public function __construct(
-        int $landlordId,
-        int $renterId,
-        int $bundleId,
-        string $renterRole,
-        ?string $renterStatus = null,
-        ?Date $createdOn = null,
-        ?Date $modifiedOn = null,
-        ?string $renterFirstName = null,
-        ?string $renterLastName = null,
-        ?string $renterMiddleName = null,
-        ?int $reportsExpireNumberOfDays = null
-    ) {
-        $this->landlordId = $landlordId;
-        $this->renterId = $renterId;
-        $this->bundleId = $bundleId;
-        $this->renterRole = $renterRole;
-        $this->renterStatus = $renterStatus;
-        $this->createdOn = $createdOn;
-        $this->modifiedOn = $modifiedOn;
-        $this->renterFirstName = $renterFirstName;
-        $this->renterLastName = $renterLastName;
-        $this->renterMiddleName = $renterMiddleName;
-        $this->reportsExpireNumberOfDays = $reportsExpireNumberOfDays;
+        #[Assert\NotBlank]
+        private int $landlordId,
 
+        #[Assert\NotBlank]
+        private int $renterId,
+
+        #[Assert\NotBlank]
+        private int $bundleId,
+
+        private RenterRole $renterRole,
+
+        private ?RenterStatus $renterStatus = null,
+        private ?Date $createdOn = null,
+        private ?Date $modifiedOn = null,
+        private ?string $renterFirstName = null,
+        private ?string $renterLastName = null,
+        private ?string $renterMiddleName = null,
+        private ?int $reportsExpireNumberOfDays = null,
+    ) {
         $this->validate();
+    }
+
+
+    public function setScreeningRequestRenterId(?int $val): void
+    {
+        $this->screeningRequestRenterId = $val;
     }
 
 
@@ -101,63 +72,27 @@ class ScreeningRequestRenter
     }
 
 
-    public function getRenterRole(): string
+    public function setRenterRole(RenterRole $val): void
+    {
+        $this->renterRole = $val;
+    }
+
+
+    public function getRenterRole(): RenterRole
     {
         return $this->renterRole;
     }
 
 
-    public function getRenterStatus(): ?string
-    {
-        return $this->renterStatus;
-    }
-
-
-    public function getCreatedOn(): ?Date
-    {
-        return $this->createdOn;
-    }
-
-
-    public function getModifiedOn(): ?Date
-    {
-        return $this->modifiedOn;
-    }
-
-
-    public function getRenterFirstName(): ?string
-    {
-        return $this->renterFirstName;
-    }
-
-
-    public function getRenterLastName(): ?string
-    {
-        return $this->renterLastName;
-    }
-
-
-    public function getRenterMiddleName(): ?string
-    {
-        return $this->renterMiddleName;
-    }
-
-
-    public function getReportsExpireNumberOfDays(): ?int
-    {
-        return $this->reportsExpireNumberOfDays;
-    }
-
-
-    public function setScreeningRequestRenterId(?int $val): void
-    {
-        $this->screeningRequestRenterId = $val;
-    }
-
-
-    public function setRenterStatus(?string $val): void
+    public function setRenterStatus(?RenterStatus $val): void
     {
         $this->renterStatus = $val;
+    }
+
+
+    public function getRenterStatus(): ?RenterStatus
+    {
+        return $this->renterStatus;
     }
 
 
@@ -167,9 +102,21 @@ class ScreeningRequestRenter
     }
 
 
+    public function getCreatedOn(): ?Date
+    {
+        return $this->createdOn;
+    }
+
+
     public function setModifiedOn(?Date $val): void
     {
         $this->modifiedOn = $val;
+    }
+
+
+    public function getModifiedOn(): ?Date
+    {
+        return $this->modifiedOn;
     }
 
 
@@ -179,9 +126,21 @@ class ScreeningRequestRenter
     }
 
 
+    public function getRenterFirstName(): ?string
+    {
+        return $this->renterFirstName;
+    }
+
+
     public function setRenterLastName(?string $val): void
     {
         $this->renterLastName = $val;
+    }
+
+
+    public function getRenterLastName(): ?string
+    {
+        return $this->renterLastName;
     }
 
 
@@ -191,15 +150,25 @@ class ScreeningRequestRenter
     }
 
 
+    public function getRenterMiddleName(): ?string
+    {
+        return $this->renterMiddleName;
+    }
+
+
     public function setReportsExpireNumberOfDays(?int $val): void
     {
         $this->reportsExpireNumberOfDays = $val;
     }
 
 
-    /**
-     * @return string[]
-     */
+    public function getReportsExpireNumberOfDays(): ?int
+    {
+        return $this->reportsExpireNumberOfDays;
+    }
+
+
+    /** @return string[] */
     public function toArray(): array
     {
         $array = [];
@@ -211,10 +180,10 @@ class ScreeningRequestRenter
         $array['landlordId'] = $this->landlordId;
         $array['renterId'] = $this->renterId;
         $array['bundleId'] = $this->bundleId;
-        $array['renterRole'] = $this->renterRole;
+        $array['renterRole'] = $this->renterRole->value;
 
         if ($this->renterStatus) {
-            $array['renterStatus'] = $this->renterStatus;
+            $array['renterStatus'] = $this->renterStatus->value;
         }
 
         if ($this->createdOn) {
@@ -242,5 +211,28 @@ class ScreeningRequestRenter
         }
 
         return $array;
+    }
+
+
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $renter = new self(
+            $data['landlordId'],
+            $data['renterId'],
+            $data['bundleId'],
+            RenterRole::from($data['renterRole']),
+            RenterStatus::from($data['renterStatus']),
+            $data['createdOn'] ? new Date(substr($data['createdOn'], 0, 10)) : null,
+            $data['modifiedOn'] ? new Date(substr($data['modifiedOn'], 0, 10)) : null,
+            $data['renterFirstName'] ?? null,
+            $data['renterLastName'] ?? null,
+            $data['renterMiddleName'] ?? null,
+            $data['reportsExpireNumberOfDays'] ?? null,
+        );
+
+        $renter->setScreeningRequestRenterId($data['screeningRequestRenterId'] ?? null);
+
+        return $renter;
     }
 }

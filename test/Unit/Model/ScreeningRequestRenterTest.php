@@ -6,6 +6,8 @@ namespace Test\Unit\Rentpost\TUShareable\Model;
 
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Date;
+use Rentpost\TUShareable\Model\RenterRole;
+use Rentpost\TUShareable\Model\RenterStatus;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 
 class ScreeningRequestRenterTest extends TestCase
@@ -15,8 +17,8 @@ class ScreeningRequestRenterTest extends TestCase
         int $landlordId,
         int $renterId,
         int $bundleId,
-        string $renterRole,
-        ?string $renterStatus = null,
+        RenterRole $renterRole,
+        ?RenterStatus $renterStatus = null,
         ?string $renterFirstName = null,
         ?string $renterLastName = null,
         ?string $renterMiddleName = null,
@@ -40,7 +42,16 @@ class ScreeningRequestRenterTest extends TestCase
 
     public function testConstructorAndGetters(): void
     {
-        $renter = $this->makeObject(1, 2, 3, 'Applicant', 'IdentityVerificationPending', 'First', 'Last', 'Middle');
+        $renter = $this->makeObject(
+            1,
+            2,
+            3,
+            RenterRole::Applicant,
+            RenterStatus::IdentityVerificationPending,
+            'First',
+            'Last',
+            'Middle',
+        );
 
         $this->assertInstanceOf(Date::class, $renter->getCreatedOn());
         $this->assertInstanceOf(Date::class, $renter->getModifiedOn());
@@ -48,8 +59,8 @@ class ScreeningRequestRenterTest extends TestCase
         $this->assertSame(1, $renter->getLandlordId());
         $this->assertSame(2, $renter->getRenterId());
         $this->assertSame(3, $renter->getBundleId());
-        $this->assertSame('Applicant', $renter->getRenterRole());
-        $this->assertSame('IdentityVerificationPending', $renter->getRenterStatus());
+        $this->assertSame('Applicant', $renter->getRenterRole()->value);
+        $this->assertSame('IdentityVerificationPending', $renter->getRenterStatus()->value);
         $this->assertSame('2022-03-10', $renter->getCreatedOn()->getValue());
         $this->assertSame('2022-04-16', $renter->getModifiedOn()->getValue());
         $this->assertSame('First', $renter->getRenterFirstName());

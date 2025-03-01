@@ -25,7 +25,7 @@ class WebhookParser
 
         return new WebhookReportDelivery(
             $data['ScreeningRequestRenterId'],
-            $data['ReportsDeliveryStatus']
+            $data['ReportsDeliveryStatus'],
         );
     }
 
@@ -38,7 +38,7 @@ class WebhookParser
 
         return new WebhookAuthenticationStatus(
             $data['ScreeningRequestRenterId'],
-            $data['ManualAuthenticationStatus']
+            $data['ManualAuthenticationStatus'],
         );
     }
 }

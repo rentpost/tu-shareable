@@ -11,11 +11,9 @@ class Report
 {
 
     public function __construct(
-        protected string $providerName,
-        protected string $reportData
-    )
-    {
-    }
+        private string $providerName,
+        private string $reportData,
+    ) {}
 
 
     public function getProviderName(): string

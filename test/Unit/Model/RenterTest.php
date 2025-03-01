@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Date;
 use Rentpost\TUShareable\Model\Email;
+use Rentpost\TUShareable\Model\EmploymentStatus;
 use Rentpost\TUShareable\Model\Money;
 use Rentpost\TUShareable\Model\Person;
 use Rentpost\TUShareable\Model\Phone;
@@ -24,7 +25,7 @@ class RenterTest extends TestCase
         $address = new Address('Streetname', 'Apartment', '', '', 'Los Angeles', 'CA', '12345');
         $email = new Email('test@example.com');
         $phone = new Phone('0123456789', 'Home');
-        $ssn = new SocialSecurityNumber('012345789');
+        $nationalId = new SocialSecurityNumber('012345789');
         $date = new Date('1990-03-15');
 
         return new Person(
@@ -33,7 +34,7 @@ class RenterTest extends TestCase
             'Middle',
             'Last',
             $phone,
-            $ssn,
+            $nationalId,
             $date,
             $address,
             true,
@@ -47,7 +48,7 @@ class RenterTest extends TestCase
         string $otherIncome,
         string $otherIncomeFrequency,
         string $assets,
-        string $employmentStatus,
+        EmploymentStatus $employmentStatus,
         ?Date $multiShareExpirationDate = null,
     ): Renter
     {
@@ -72,7 +73,7 @@ class RenterTest extends TestCase
             '5000',
             'PerYear',
             '12000',
-            'SelfEmployed',
+            EmploymentStatus::SelfEmployed,
             new Date('2022-12-30'),
         );
 
@@ -90,25 +91,23 @@ class RenterTest extends TestCase
         $this->assertSame('2022-12-30', $renter->getMultiShareExpirationDate()->getValue());
 
         $this->assertSame([
-            'person' => [
-                'emailAddress' => 'test@example.com',
-                'firstName' => 'First',
-                'middleName' => 'Middle',
-                'lastName' => 'Last',
-                'phoneNumber' => '0123456789',
-                'phoneType' => 'Home',
-                'socialSecurityNumber' => '012345789',
-                'dateOfBirth' => '1990-03-15',
-                'homeAddress' => [
-                    'addressLine1' => 'Streetname',
-                    'addressLine2' => 'Apartment',
-                    'locality' => 'Los Angeles',
-                    'region' => 'CA',
-                    'postalCode' => '12345',
-                    'country' => 'US',
-                ],
-                'acceptedTermsAndConditions' => true,
+            'emailAddress' => 'test@example.com',
+            'firstName' => 'First',
+            'middleName' => 'Middle',
+            'lastName' => 'Last',
+            'phoneNumber' => '0123456789',
+            'phoneType' => 'Home',
+            'nationalId' => '012345789',
+            'dateOfBirth' => '1990-03-15',
+            'homeAddress' => [
+                'addressLine1' => 'Streetname',
+                'addressLine2' => 'Apartment',
+                'locality' => 'Los Angeles',
+                'region' => 'CA',
+                'postalCode' => '12345',
+                'country' => 'US',
             ],
+            'acceptedTermsAndConditions' => true,
             'income' => '1000',
             'incomeFrequency' => 'PerMonth',
             'otherIncome' => '5000',
@@ -125,14 +124,11 @@ class RenterTest extends TestCase
     {
         return [
             // Invalid income frequency
-            ['1000', 'Invalid', '5000', 'PerYear', '12000', 'SelfEmployed', null,
+            ['1000', 'Invalid', '5000', 'PerYear', '12000', EmploymentStatus::SelfEmployed, null,
                 'The value you selected is not a valid choice.', 'incomeFrequency'],
             // Invalid other income frequency
-            ['1000', 'PerMonth', '5000', 'Invalid', '12000', 'SelfEmployed', null,
+            ['1000', 'PerMonth', '5000', 'Invalid', '12000', EmploymentStatus::SelfEmployed, null,
                 'The value you selected is not a valid choice.', 'otherIncomeFrequency'],
-            // Invalid employment status
-            ['1000', 'PerMonth', '5000', 'PerYear', '12000', 'Invalid', null,
-                'The value you selected is not a valid choice.', 'employmentStatus'],
         ];
     }
 
@@ -144,7 +140,7 @@ class RenterTest extends TestCase
         string $otherIncome,
         string $otherIncomeFrequency,
         string $assets,
-        string $employmentStatus,
+        EmploymentStatus $employmentStatus,
         ?Date $multiShareExpirationDate,
         string $errorMessage,
         string $fieldname,

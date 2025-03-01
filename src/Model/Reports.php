@@ -10,15 +10,12 @@ namespace Rentpost\TUShareable\Model;
 class Reports
 {
 
-    /**
-     * @var Report[]
-     */
-    protected array $reports = [];
+    /** @var Report[] */
+    private array $reports = [];
 
 
-    public function __construct(protected int $reportsExpireNumberOfDays)
-    {
-    }
+    public function __construct(private int $reportsExpireNumberOfDays)
+    {}
 
 
     public function addReport(Report $report): self
@@ -29,17 +26,31 @@ class Reports
     }
 
 
+    /** @return Report[] */
+    public function getReports(): array
+    {
+        return $this->reports;
+    }
+
+
     public function getReportsExpireNumberOfDays(): int
     {
         return $this->reportsExpireNumberOfDays;
     }
 
 
-    /**
-     * @return Report[]
-     */
-    public function getReports(): array
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
     {
-        return $this->reports;
+        $reports = new self($data['reportsExpireNumberOfDays']);
+
+        foreach ($data['reportResponseModelDetails'] as $reportInfo) {
+            $reports->addReport(new Report(
+                $reportInfo['providerName'],
+                $reportInfo['reportData'],
+            ));
+        }
+
+        return $reports;
     }
 }

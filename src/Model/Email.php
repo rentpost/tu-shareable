@@ -15,20 +15,22 @@ class Email
     use Validate;
 
 
-    #[Assert\NotBlank]
-    #[Assert\Email]
-    protected string $address;
-
-
-    public function __construct(string $address)
-    {
-        $this->address = $address;
-
+    public function __construct(
+        #[Assert\NotBlank]
+        #[Assert\Email]
+        private string $address,
+    ) {
         $this->validate();
     }
 
 
-    public function getAddress(): string
+    public function __toString(): string
+    {
+        return $this->address;
+    }
+
+
+    public function getValue(): string
     {
         return $this->address;
     }
