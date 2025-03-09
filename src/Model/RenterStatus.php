@@ -10,6 +10,7 @@ enum RenterStatus: string
     case ScreeningRequestCanceled = 'ScreeningRequestCanceled';
     case ReadyForReportRequest = 'ReadyForReportRequest';
     case PaymentFailure = 'PaymentFailure';
+    case ReportsRequested = 'ReportsRequested';
     case ReportsDeliveryInProgress = 'ReportsDeliveryInProgress';
     case ReportsDeliveryFailed = 'ReportsDeliveryFailed';
     case ReportsDeliverySuccess = 'ReportsDeliverySuccess';
