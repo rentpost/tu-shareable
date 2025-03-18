@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Client;
 use Rentpost\TUShareable\ClientInterface;
 use Rentpost\TUShareable\Model\Address;
+use Rentpost\TUShareable\Model\AttestationGroup;
 use Rentpost\TUShareable\Model\CultureCode;
 use Rentpost\TUShareable\Model\Date;
 use Rentpost\TUShareable\Model\Email;
@@ -219,20 +220,56 @@ class IntegrationTest extends TestCase
 
     #[Depends('testUpdateLandlord')]
     #[Depends('testUpdateProperty')]
+    public function testGettingAttestationsForProperty(
+        Landlord $landlord,
+        Property $property,
+    ): AttestationGroup
+    {
+        $attestationGroup = self::$client->getAttestationsForProperty(
+            $landlord->getLandlordId(),
+            $property->getPropertyId(),
+        );
+
+        $this->assertInstanceOf(AttestationGroup::class, $attestationGroup);
+
+        $this->assertIsInt($attestationGroup->getAttestationGroupId());
+        $this->assertIsArray($attestationGroup->getAttestations());
+        $this->assertNotEmpty($attestationGroup->getAttestations());
+
+        foreach ($attestationGroup->getAttestations() as $attestation) {
+            $this->assertIsInt($attestation->getAttestationId());
+            $this->assertIsString($attestation->getName());
+            $this->assertIsString($attestation->getLegalText());
+            $this->assertIsBool($attestation->isAffirmativeRequired());
+            $this->assertIsString($attestation->getAdditionalInformation());
+        }
+
+        return $attestationGroup;
+    }
+
+
+    #[Depends('testUpdateLandlord')]
+    #[Depends('testUpdateProperty')]
+    #[Depends('testGettingAttestationsForProperty')]
     public function testCreateScreeningRequest(
         Landlord $landlord,
         Property $property,
+        AttestationGroup $attestationGroup,
     ): ScreeningRequest
     {
+        // Must attest to all attestations
+        foreach ($attestationGroup->getAttestations() as $attestation) {
+            $attestationGroup->addAttestationResponse($attestation->getAttestationId(), true);
+        }
+
         $request = new ScreeningRequest(
-            $landlord->getLandlordId(),
-            $property->getPropertyId(),
-            1_004, // bundleId
+            landlordId: $landlord->getLandlordId(),
+            propertyId: $property->getPropertyId(),
+            initialBundleId: 1_004,
+            attestationGroup: $attestationGroup,
         );
 
         self::$client->createScreeningRequest(
-            $landlord->getLandlordId(),
-            $property->getPropertyId(),
             $request,
         );
 
@@ -456,31 +493,6 @@ class IntegrationTest extends TestCase
         // fails an exception is thrown. But we have to assert something
         // to disable phpunit warning.
         $this->assertTrue(true);
-    }
-
-
-    #[Depends('testUpdateLandlord')]
-    #[Depends('testUpdateProperty')]
-    public function testGettingAttestationsForProperty(
-        Landlord $landlord,
-        Property $property,
-    ): void
-    {
-        $attestations = self::$client->getAttestationsForProperty(
-            $landlord->getLandlordId(),
-            $property->getPropertyId(),
-        );
-
-        $this->assertIsArray($attestations);
-        $this->assertNotEmpty($attestations);
-
-        foreach ($attestations as $attestation) {
-            $this->assertIsInt($attestation->getAttestationId());
-            $this->assertIsString($attestation->getName());
-            $this->assertIsString($attestation->getLegalText());
-            $this->assertIsBool($attestation->isAffirmativeRequired());
-            $this->assertIsString($attestation->getAdditionalInformation());
-        }
     }
 
 

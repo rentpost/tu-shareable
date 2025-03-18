@@ -23,18 +23,21 @@ class ScreeningRequest
 
     public function __construct(
         #[Assert\NotBlank]
-        private int $landlordId,
+        private readonly int $landlordId,
 
         #[Assert\NotBlank]
-        private int $propertyId,
+        private readonly int $propertyId,
 
         #[Assert\NotBlank]
-        private int $initialBundleId,
+        private readonly int $initialBundleId,
 
         private ?Date $createdOn = null,
         private ?Date $modifiedOn = null,
+
         private ?string $propertyName = null,
         private ?string $propertySummaryAddress = null,
+
+        private ?AttestationGroup $attestationGroup = null,
     ) {
         $this->validate();
     }
@@ -123,6 +126,18 @@ class ScreeningRequest
     }
 
 
+    public function setAttestationGroup(?AttestationGroup $val): void
+    {
+        $this->attestationGroup = $val;
+    }
+
+
+    public function getAttestationGroup(): ?AttestationGroup
+    {
+        return $this->attestationGroup;
+    }
+
+
     /** @return string[] */
     public function toArray(): array
     {
@@ -157,6 +172,10 @@ class ScreeningRequest
             $renters[] = $renter->toArray();
         }
         $array['screeningRequestRenters'] = $renters;
+
+        if ($this->attestationGroup) {
+            $array['attestation'] = $this->attestationGroup->toArray();
+        }
 
         return $array;
     }

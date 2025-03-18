@@ -7,7 +7,7 @@ namespace Rentpost\TUShareable;
 use Psr\Http\Client\ClientInterface as HttpClient;
 use Psr\Http\Message\RequestFactoryInterface as HttpRequestFactory;
 use Psr\Log\LoggerInterface;
-use Rentpost\TUShareable\Model\Attestation;
+use Rentpost\TUShareable\Model\AttestationGroup;
 use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\CultureCode;
 use Rentpost\TUShareable\Model\Exam;
@@ -386,12 +386,11 @@ class Client implements ClientInterface
     }
 
 
-    public function createScreeningRequest(
-        int $landlordId,
-        int $propertyId,
-        ScreeningRequest $request,
-    ): void
+    public function createScreeningRequest(ScreeningRequest $request): ScreeningRequest
     {
+        $landlordId = $request->getLandlordId();
+        $propertyId = $request->getPropertyId();
+
         $response = $this->requestJson(
             'POST',
             "Landlords/{$landlordId}/Properties/{$propertyId}/ScreeningRequests",
@@ -401,6 +400,8 @@ class Client implements ClientInterface
         $responseData = $this->decodeJson($response);
 
         $request->setScreeningRequestId($responseData['screeningRequestId']);
+
+        return $request;
     }
 
 
@@ -488,8 +489,7 @@ class Client implements ClientInterface
      */
 
 
-    /** @return Attestation[] */
-    public function getAttestationsForProperty(int $landlordId, int $propertyId): array
+    public function getAttestationsForProperty(int $landlordId, int $propertyId): AttestationGroup
     {
         $response = $this->requestJson(
             'POST',
@@ -498,18 +498,11 @@ class Client implements ClientInterface
 
         $data = $this->decodeJson($response);
 
-        $results = [];
-
-        foreach ($data['attestations'] as $attestation) {
-            $results[] = Attestation::fromArray($attestation);
-        }
-
-        return $results;
+        return AttestationGroup::fromArray($data);
     }
 
 
-     /** @return Attestation[] */
-    public function getAttestationsForRenter(int $renterId, int $screeningRequestId): array
+    public function getAttestationsForRenter(int $renterId, int $screeningRequestId): AttestationGroup
     {
         $response = $this->requestJson(
             'POST',
@@ -518,13 +511,7 @@ class Client implements ClientInterface
 
         $data = $this->decodeJson($response);
 
-        $results = [];
-
-        foreach ($data['attestations'] as $attestation) {
-            $results[] = Attestation::fromArray($attestation);
-        }
-
-        return $results;
+        return AttestationGroup::fromArray($data);
     }
 
 

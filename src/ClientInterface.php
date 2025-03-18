@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Rentpost\TUShareable;
 
 use Rentpost\TUShareable\Model\Attestation;
+use Rentpost\TUShareable\Model\AttestationGroup;
 use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\CultureCode;
 use Rentpost\TUShareable\Model\Exam;
@@ -95,9 +96,7 @@ interface ClientInterface
     public function getScreeningRequest(int $screeningRequestId): ScreeningRequest;
 
 
-    /**
-     * @return ScreeningRequest[]
-     */
+    /** @return ScreeningRequest[] */
     public function getScreeningRequestsForLandlord(
         int $landlordId,
         int $pageNumber = 1,
@@ -105,9 +104,7 @@ interface ClientInterface
     ): array;
 
 
-    /**
-     * @return ScreeningRequest[]
-     */
+    /** @return ScreeningRequest[] */
     public function getScreeningRequestsForRenter(
         int $renterId,
         int $pageNumber = 1,
@@ -115,11 +112,7 @@ interface ClientInterface
     ): array;
 
 
-    public function createScreeningRequest(
-        int $landlordId,
-        int $propertyId,
-        ScreeningRequest $request,
-    ): void;
+    public function createScreeningRequest(ScreeningRequest $request): ScreeningRequest;
 
 
     /*
@@ -151,12 +144,10 @@ interface ClientInterface
      */
 
 
-    /** @return Attestation[] */
-    public function getAttestationsForProperty(int $landlordId, int $propertyId): array;
+    public function getAttestationsForProperty(int $landlordId, int $propertyId): AttestationGroup;
 
 
-    /** @return Attestation[] */
-    public function getAttestationsForRenter(int $renterId, int $screeningRequestId): array;
+    public function getAttestationsForRenter(int $renterId, int $screeningRequestId): AttestationGroup;
 
 
     /*
