@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace Rentpost\TUShareable\Model;
 
-use Symfony\Component\Validator\Constraints as Assert;
-
 /**
  * Class that represents a group of Attestations.
  *
@@ -25,7 +23,6 @@ class AttestationGroup
         private readonly int $attestationGroupId,
 
         /** @var Attestation[]|null */
-        #[Assert\NotBlank]
         private ?array $attestations = null,
     ) {
         $this->validate();
