@@ -15,15 +15,11 @@ class Date
     use Validate;
 
 
-    #[Assert\NotBlank(message: 'The value is not a valid date.')]
-    #[Assert\Regex('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', 'The value is not a valid date.')]
-    protected string $value;
-
-
-    public function __construct(string $value)
-    {
-        $this->value = $value;
-
+    public function __construct(
+        #[Assert\NotBlank(message: 'The value is not a valid date.')]
+        #[Assert\Regex('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', 'The value is not a valid date.')]
+        private string $value,
+    ) {
         $this->validate();
     }
 

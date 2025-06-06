@@ -15,20 +15,15 @@ class Phone
     use Validate;
 
 
-    #[Assert\NotBlank]
-    #[Assert\Regex('/^[0-9]{10,15}$/', 'The value is not a valid phone number.')]
-    protected string $number;
+    public function __construct(
+        #[Assert\NotBlank]
+        #[Assert\Regex('/^[0-9]{10,15}$/', 'The value is not a valid phone number.')]
+        private string $number,
 
-    #[Assert\NotBlank]
-    #[Assert\Choice(['Mobile', 'Home', 'Office'])]
-    protected string $type;
-
-
-    public function __construct(string $number, string $type)
-    {
-        $this->number = $number;
-        $this->type = $type;
-
+        #[Assert\NotBlank]
+        #[Assert\Choice(['Mobile', 'Home', 'Office'])]
+        private string $type,
+    ) {
         $this->validate();
     }
 
@@ -45,9 +40,7 @@ class Phone
     }
 
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function toArray(): array
     {
         return [

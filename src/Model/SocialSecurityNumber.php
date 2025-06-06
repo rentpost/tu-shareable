@@ -15,15 +15,11 @@ class SocialSecurityNumber
     use Validate;
 
 
-    #[Assert\NotBlank]
-    #[Assert\Regex('/^[0-9]{9}$/', 'The value is not a valid social security number.')]
-    protected string $ssn;
-
-
-    public function __construct(string $ssn)
-    {
-        $this->ssn = $ssn;
-
+    public function __construct(
+        #[Assert\NotBlank]
+        #[Assert\Regex('/^[0-9]{9}$/', 'The value is not a valid social security number.')]
+        private string $ssn,
+    ) {
         $this->validate();
     }
 

@@ -15,18 +15,12 @@ class Bundle
     use Validate;
 
 
-    #[Assert\NotBlank]
-    protected int $bundleId;
-
-    #[Assert\NotBlank]
-    protected string $name;
-
-
-    public function __construct(int $bundleId, string $name)
-    {
-        $this->bundleId = $bundleId;
-        $this->name = $name;
-
+    public function __construct(
+        #[Assert\NotBlank]
+        private int $bundleId,
+        #[Assert\NotBlank]
+        private string $name,
+    ) {
         $this->validate();
     }
 
@@ -43,14 +37,22 @@ class Bundle
     }
 
 
-    /**
-     * @return string[]
-     */
+    /** @return array<string, mixed> */
     public function toArray(): array
     {
         return [
             'bundleId' => $this->bundleId,
             'name' => $this->name,
         ];
+    }
+
+
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            $data['bundleId'],
+            $data['name'],
+        );
     }
 }

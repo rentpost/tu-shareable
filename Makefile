@@ -2,7 +2,7 @@
 
 SHELL:=/bin/bash
 
-.PHONY: help init test
+.PHONY: help init install-vendors update-vendors register-with-transunion check-status test
 
 
 # Test that we have the necessary binaries available
@@ -24,20 +24,29 @@ help:
 ##
 
 
-init:               ## Initializes the project and all dependencies
+init:                       ## Initializes the project and all dependencies
 	@composer install
+	@cp ./config.template ./config
+	@echo "Config template copied. Please edit the ./config file with your Transunion API credentials."
 
 
-install-vendors:    ## Installs vendor dependencies
+install-vendors:            ## Installs vendor dependencies
 	$(call checkExecutables, composer)
 	@composer install
 
 
-update-vendors:     ## Updates vendor dependencies
+update-vendors:             ## Updates vendor dependencies
 	$(call checkExecutables, composer)
 	@composer update
 
 
-test:               ## Executes the test suites
+register-with-transunion:   ## Registers the API key with Transunion
+	@bin/register
+
+
+check-status:               ## Checks the status of the Transunion API
+	@bin/getStatus
+
+test:                       ## Executes the test suites
 	$(call checkExecutables, phpunit)
 	@phpunit

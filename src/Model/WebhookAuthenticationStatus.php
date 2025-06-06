@@ -7,9 +7,10 @@ namespace Rentpost\TUShareable\Model;
 class WebhookAuthenticationStatus
 {
 
-    public function __construct(protected int $screeningRequestRenterId, protected string $manualAuthenticationStatus)
-    {
-    }
+    public function __construct(
+        private int $screeningRequestRenterId,
+        private string $manualAuthenticationStatus,
+    ) {}
 
 
     public function getScreeningRequestRenterId(): int

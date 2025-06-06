@@ -15,15 +15,11 @@ class Money
     use Validate;
 
 
-    #[Assert\NotBlank(message: 'The value is not a valid currency amount.')]
-    #[Assert\Regex('/^-?[0-9]{1,10}\\.?[0-9]{0,2}$/', 'The value is not a valid currency amount.')]
-    protected string $value;
-
-
-    public function __construct(string $value)
-    {
-        $this->value = $value;
-
+    public function __construct(
+        #[Assert\NotBlank(message: 'The value is not a valid currency amount.')]
+        #[Assert\Regex('/^-?[0-9]{1,10}\\.?[0-9]{0,2}$/', 'The value is not a valid currency amount.')]
+        private string $value,
+    ) {
         $this->validate();
     }
 

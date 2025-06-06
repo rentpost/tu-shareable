@@ -19,7 +19,7 @@ trait Validate
             ->setConstraintValidatorFactory(
                 new ConstraintValidatorFactory([
                     EmailValidator::class => new EmailValidator(Email::VALIDATION_MODE_HTML5),
-                ])
+                ]),
             )
             ->enableAttributeMapping()
             ->getValidator();

@@ -10,23 +10,12 @@ namespace Rentpost\TUShareable\Model;
 class Exam
 {
 
-    protected int $examId;
-
-    /**
-     * @var ExamQuestion[]
-     */
-    protected array $authenticationQuestions = [];
-
-    protected string $result;
-
-    protected ?string $externalReferenceNumber = null;
+    /** @var ExamQuestion[] */
+    private array $authenticationQuestions = [];
+    private ?string $externalReferenceNumber = null;
 
 
-    public function __construct(int $examId, string $result)
-    {
-        $this->examId = $examId;
-        $this->result = $result;
-    }
+    public function __construct(private int $examId, private string $result) {}
 
 
     public function addQuestion(ExamQuestion $question): self
@@ -43,9 +32,7 @@ class Exam
     }
 
 
-    /**
-     * @return ExamQuestion[]
-     */
+    /** @return ExamQuestion[] */
     public function getAuthenticationQuestions(): array
     {
         return $this->authenticationQuestions;
@@ -67,5 +54,27 @@ class Exam
     public function setExternalReferenceNumber(?string $val): void
     {
         $this->externalReferenceNumber = $val;
+    }
+
+
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $exam = new self($data['examId'], $data['result']);
+        $exam->setExternalReferenceNumber($data['setExternalReferenceNumber'] ?? null);
+
+        foreach ($data['authenticationQuestions'] as $qInfo) {
+            $question = new ExamQuestion($qInfo['questionKeyName'], $qInfo['questionDisplayName'], $qInfo['type']);
+
+            foreach ($qInfo['choices'] as $choice) {
+                $answer = new ExamQuestionAnswer($choice['choiceKeyName'], $choice['choiceDisplayName']);
+
+                $question->addChoice($answer);
+            }
+
+            $exam->addQuestion($question);
+        }
+
+        return $exam;
     }
 }

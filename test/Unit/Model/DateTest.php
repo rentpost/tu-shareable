@@ -2,8 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit\Model;
+namespace Test\Unit\Rentpost\TUShareable\Model;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Date;
 use Rentpost\TUShareable\ValidationException;
@@ -11,7 +12,7 @@ use Rentpost\TUShareable\ValidationException;
 class DateTest extends TestCase
 {
 
-    public function testConstructorAndGetters()
+    public function testConstructorAndGetters(): void
     {
         $date = new Date('2022-01-01');
 
@@ -19,7 +20,10 @@ class DateTest extends TestCase
     }
 
 
-    public function validationProvider()
+    /**
+     * @return array<array<string>>
+     */
+    public static function validationProvider(): array
     {
         return [
             [ '' ],
@@ -29,10 +33,8 @@ class DateTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider validationProvider
-     */
-    public function testValidationErrors(string $value)
+    #[DataProvider('validationProvider')]
+    public function testValidationErrors(string $value): void
     {
         $this->expectException(ValidationException::class);
         $errorMessage = 'The value is not a valid date.';

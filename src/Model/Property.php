@@ -15,105 +15,35 @@ class Property
     use Validate;
 
 
-    protected ?int $propertyId = null;
-
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 1, max: 100)]
-    protected string $propertyName;
-
-    #[Assert\NotBlank]
-    protected Money $rent;
-
-    #[Assert\NotBlank]
-    protected Money $deposit;
-
-    protected bool $isActive = true;
-
-    #[Assert\NotBlank]
-    protected Address $address;
-
-    protected bool $bankruptcyCheck;
-
-    // Time frame to go back and determine if bankruptcy is too recent
-    // If BankruptcyCheck is true, time frame is required, and must be between 6-120
-    protected int $bankruptcyTimeFrame;
-
-    // The amount of income as compared to ratio that is sufficent for renting
-    protected int $incomeToRentRatio;
+    private ?int $propertyId = null;
+    private bool $isActive = true;
 
 
+    /**
+     * Constructor
+     *
+     * @param int $bankruptcyTimeFrame  Time frame to go back and determine if bankruptcy is too recent
+     *                                  If BankruptcyCheck is true, time frame is required, and must be between 6-120
+     * @param int $incomeToRentRatio    The amount of income as compared to ratio that is sufficent for renting
+     */
     public function __construct(
-        string $propertyName,
-        Money $rent,
-        Money $deposit,
-        Address $address,
-        bool $bankruptcyCheck,
-        int $bankruptcyTimeFrame,
-        int $incomeToRentRatio
+        #[Assert\NotBlank]
+        #[Assert\Length(min: 1, max: 100)]
+        private string $propertyName,
+
+        #[Assert\NotBlank]
+        private Money $rent,
+
+        #[Assert\NotBlank]
+        private Money $deposit,
+
+        #[Assert\NotBlank]
+        private Address $address,
+        private bool $bankruptcyCheck,
+        private int $bankruptcyTimeFrame,
+        private int $incomeToRentRatio,
     ) {
-        $this->propertyName = $propertyName;
-        $this->rent = $rent;
-        $this->deposit = $deposit;
-        $this->address = $address;
-        $this->bankruptcyCheck = $bankruptcyCheck;
-        $this->bankruptcyTimeFrame = $bankruptcyTimeFrame;
-        $this->incomeToRentRatio = $incomeToRentRatio;
-
         $this->validate();
-    }
-
-
-    public function getPropertyId(): ?int
-    {
-        return $this->propertyId;
-    }
-
-
-    public function getPropertyName(): string
-    {
-        return $this->propertyName;
-    }
-
-
-    public function getRent(): Money
-    {
-        return $this->rent;
-    }
-
-
-    public function getDeposit(): Money
-    {
-        return $this->deposit;
-    }
-
-
-    public function getIsActive(): bool
-    {
-        return $this->isActive;
-    }
-
-
-    public function getAddress(): Address
-    {
-        return $this->address;
-    }
-
-
-    public function getBankruptcyCheck(): bool
-    {
-        return $this->bankruptcyCheck;
-    }
-
-
-    public function getBankruptcyTimeFrame(): int
-    {
-        return $this->bankruptcyTimeFrame;
-    }
-
-
-    public function getIncomeToRentRatio(): int
-    {
-        return $this->incomeToRentRatio;
     }
 
 
@@ -123,15 +53,109 @@ class Property
     }
 
 
+    public function getPropertyId(): ?int
+    {
+        return $this->propertyId;
+    }
+
+
+    public function setPropertyName(string $propertyName): void
+    {
+        $this->propertyName = $propertyName;
+    }
+
+
+    public function getPropertyName(): string
+    {
+        return $this->propertyName;
+    }
+
+
+    public function setRent(Money $rent): void
+    {
+        $this->rent = $rent;
+    }
+
+
+    public function getRent(): Money
+    {
+        return $this->rent;
+    }
+
+
+    public function setDeposit(Money $deposit): void
+    {
+        $this->deposit = $deposit;
+    }
+
+
+    public function getDeposit(): Money
+    {
+        return $this->deposit;
+    }
+
+
     public function setIsActive(bool $val): void
     {
         $this->isActive = $val;
     }
 
 
-    /**
-     * @return string[]
-     */
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+
+    public function setAddress(Address $address): void
+    {
+        $this->address = $address;
+    }
+
+
+    public function getAddress(): Address
+    {
+        return $this->address;
+    }
+
+
+    public function setBankruptcyCheck(bool $bankruptcyCheck): void
+    {
+        $this->bankruptcyCheck = $bankruptcyCheck;
+    }
+
+
+    public function getBankruptcyCheck(): bool
+    {
+        return $this->bankruptcyCheck;
+    }
+
+
+    public function setBankruptcyTimeFrame(int $bankruptcyTimeFrame): void
+    {
+        $this->bankruptcyTimeFrame = $bankruptcyTimeFrame;
+    }
+
+
+    public function getBankruptcyTimeFrame(): int
+    {
+        return $this->bankruptcyTimeFrame;
+    }
+
+
+    public function setIncomeToRentRatio(int $incomeToRentRatio): void
+    {
+        $this->incomeToRentRatio = $incomeToRentRatio;
+    }
+
+
+    public function getIncomeToRentRatio(): int
+    {
+        return $this->incomeToRentRatio;
+    }
+
+
+    /** @return string[] */
     public function toArray(): array
     {
         $array = [];
@@ -152,5 +176,25 @@ class Property
         $array['incomeToRentRatio'] = $this->incomeToRentRatio;
 
         return $array;
+    }
+
+
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $property = new self(
+            $data['propertyName'],
+            new Money((string)$data['rent']),
+            new Money((string)$data['deposit']),
+            Address::fromArray($data),
+            boolval($data['bankruptcyCheck']),
+            $data['bankruptcyTimeFrame'],
+            $data['incomeToRentRatio'],
+        );
+
+        $property->setPropertyId($data['propertyId'] ?? null);
+        $property->setIsActive(boolval($data['isActive']));
+
+        return $property;
     }
 }

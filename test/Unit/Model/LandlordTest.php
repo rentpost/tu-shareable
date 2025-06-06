@@ -2,8 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit\Model;
+namespace Test\Unit\Rentpost\TUShareable\Model;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Email;
@@ -14,7 +15,33 @@ use Rentpost\TUShareable\ValidationException;
 class LandlordTest extends TestCase
 {
 
-    public function testConstructorAndGetters()
+    protected function makeObject(
+        string $firstName,
+        string $lastName,
+        string $businessName,
+        bool $acceptedTerms = true,
+    ): Landlord
+    {
+        // Address, Email and Phone are tested separately. Here we just give
+        // them valid values for now and focus on testing other properties of Landlord.
+
+        $address = new Address('Streetname', 'Apartment', '', '', 'Los Angeles', 'CA', '12345');
+        $email = new Email('test@example.com');
+        $phone = new Phone('0123456789', 'Home');
+
+        return new Landlord(
+            $email,
+            $firstName,
+            $lastName,
+            $phone,
+            $businessName,
+            $address,
+            $acceptedTerms,
+        );
+    }
+
+
+    public function testConstructorAndGetters(): void
     {
         $landlord = $this->makeObject('First', 'Last', 'Business', true);
         $landlord->setLandlordId(123);
@@ -50,7 +77,10 @@ class LandlordTest extends TestCase
     }
 
 
-    public function validationProvider()
+    /**
+     * @return array<array<string, string|bool>>
+     */
+    public static function validationProvider(): array
     {
         return [
             // No first name
@@ -63,35 +93,18 @@ class LandlordTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider validationProvider
-     */
-    public function testValidationErrors(string $firstName, string $lastName, string $businessName, bool $acceptedTerms, string $errorMessage)
+    #[DataProvider('validationProvider')]
+    public function testValidationErrors(
+        string $firstName,
+        string $lastName,
+        string $businessName,
+        bool $acceptedTerms,
+        string $errorMessage,
+    ): void
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage($errorMessage);
 
         $this->makeObject($firstName, $lastName, $businessName, $acceptedTerms);
-    }
-
-
-    protected function makeObject(string $firstName, string $lastName, string $businessName, bool $acceptedTerms = true): Landlord
-    {
-        // Address, Email and Phone are tested separately. Here we just give
-        // them valid values for now and focus on testing other properties of Landlord.
-
-        $address = new Address('Streetname', 'Apartment', '', '', 'Los Angeles', 'CA', '12345');
-        $email = new Email('test@example.com');
-        $phone = new Phone('0123456789', 'Home');
-
-        return new Landlord(
-            $email,
-            $firstName,
-            $lastName,
-            $phone,
-            $businessName,
-            $address,
-            $acceptedTerms
-        );
     }
 }

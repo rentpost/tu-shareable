@@ -2,8 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace test\Rentpost\TUShareable\Unit\Model;
+namespace Test\Unit\Rentpost\TUShareable\Model;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Phone;
 use Rentpost\TUShareable\ValidationException;
@@ -11,7 +12,7 @@ use Rentpost\TUShareable\ValidationException;
 class PhoneTest extends TestCase
 {
 
-    public function testConstructorAndGetters()
+    public function testConstructorAndGetters(): void
     {
         $phone = new Phone('0123456789', 'Home');
 
@@ -25,7 +26,8 @@ class PhoneTest extends TestCase
     }
 
 
-    public function validationProvider()
+    /** @return array<array<int, string>> */
+    public static function validationProvider(): array
     {
         return [
             [ '', 'Home', 'This value should not be blank.' ],
@@ -39,10 +41,8 @@ class PhoneTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider validationProvider
-     */
-    public function testValidationErrors(string $phone, string $type, string $errorMessage)
+    #[DataProvider('validationProvider')]
+    public function testValidationErrors(string $phone, string $type, string $errorMessage): void
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage($errorMessage);

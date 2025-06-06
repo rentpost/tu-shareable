@@ -4,13 +4,18 @@ declare(strict_types = 1);
 
 namespace Rentpost\TUShareable;
 
+use Rentpost\TUShareable\Model\Attestation;
+use Rentpost\TUShareable\Model\AttestationGroup;
 use Rentpost\TUShareable\Model\Bundle;
+use Rentpost\TUShareable\Model\CultureCode;
 use Rentpost\TUShareable\Model\Exam;
 use Rentpost\TUShareable\Model\ExamAnswer;
 use Rentpost\TUShareable\Model\Landlord;
 use Rentpost\TUShareable\Model\Property;
 use Rentpost\TUShareable\Model\Renter;
 use Rentpost\TUShareable\Model\Reports;
+use Rentpost\TUShareable\Model\ReportType;
+use Rentpost\TUShareable\Model\RequestedProduct;
 use Rentpost\TUShareable\Model\ScreeningRequest;
 use Rentpost\TUShareable\Model\ScreeningRequestRenter;
 
@@ -19,6 +24,9 @@ use Rentpost\TUShareable\Model\ScreeningRequestRenter;
  */
 interface ClientInterface
 {
+
+    public function register(): void;
+
 
     /**
      * @return string[]
@@ -88,19 +96,23 @@ interface ClientInterface
     public function getScreeningRequest(int $screeningRequestId): ScreeningRequest;
 
 
-    /**
-     * @return ScreeningRequest[]
-     */
-    public function getScreeningRequestsForLandlord(int $landlordId, int $pageNumber = 1, int $pageSize = 10): array;
+    /** @return ScreeningRequest[] */
+    public function getScreeningRequestsForLandlord(
+        int $landlordId,
+        int $pageNumber = 1,
+        int $pageSize = 10,
+    ): array;
 
 
-    /**
-     * @return ScreeningRequest[]
-     */
-    public function getScreeningRequestsForRenter(int $renterId, int $pageNumber = 1, int $pageSize = 10): array;
+    /** @return ScreeningRequest[] */
+    public function getScreeningRequestsForRenter(
+        int $renterId,
+        int $pageNumber = 1,
+        int $pageSize = 10,
+    ): array;
 
 
-    public function createScreeningRequest(ScreeningRequest $request): void;
+    public function createScreeningRequest(ScreeningRequest $request): ScreeningRequest;
 
 
     /*
@@ -111,19 +123,31 @@ interface ClientInterface
     public function getScreeningRequestRenter(int $screeningRequestRenterId): ScreeningRequestRenter;
 
 
-    /**
-     * @return ScreeningRequestRenter[]
-     */
+    /** @return ScreeningRequestRenter[] */
     public function getRentersForScreeningRequest(int $screeningRequestId): array;
 
 
-    public function addRenterToScreeningRequest(int $screeningRequestId, ScreeningRequestRenter $renter): void;
+    public function addRenterToScreeningRequest(
+        int $screeningRequestId,
+        ScreeningRequestRenter $screeningRequestRenter,
+    ): ScreeningRequestRenter;
 
 
     public function cancelScreeningRequestForRenter(int $screeningRequestRenterId): void;
 
 
     public function validateRenterForScreeningRequest(int $screeningRequestRenterId, Renter $renter): string;
+
+
+    /*
+     * Attestations
+     */
+
+
+    public function getAttestationsForProperty(int $landlordId, int $propertyId): AttestationGroup;
+
+
+    public function getAttestationsForRenter(int $renterId, int $screeningRequestId): AttestationGroup;
 
 
     /*
@@ -134,11 +158,16 @@ interface ClientInterface
     public function createExam(
         int $screeningRequestRenterId,
         Renter $renter,
-        ?string $externalReferenceNumber = null
+        CultureCode $cultureCode,
     ): Exam;
 
 
-    public function answerExam(int $screeningRequestRenterId, int $examId, ExamAnswer $answer): Exam;
+    public function answerExam(
+        int $screeningRequestRenterId,
+        int $examId,
+        ExamAnswer $answer,
+        CultureCode $cultureCode,
+    ): Exam;
 
 
     /*
@@ -152,13 +181,13 @@ interface ClientInterface
     public function getReportsForLandlord(
         int $screeningRequestRenterId,
         RequestedProduct $requestedProduct,
-        ReportType $reportType
+        ReportType $reportType,
     ): Reports;
 
 
     public function getReportsForRenter(
         int $screeningRequestRenterId,
         RequestedProduct $requestedProduct,
-        ReportType $reportType
+        ReportType $reportType,
     ): Reports;
 }

@@ -7,9 +7,10 @@ namespace Rentpost\TUShareable\Model;
 class WebhookReportDelivery
 {
 
-    public function __construct(protected int $screeningRequestRenterId, protected string $reportsDeliveryStatus)
-    {
-    }
+    public function __construct(
+        private int $screeningRequestRenterId,
+        private string $reportsDeliveryStatus,
+    ) {}
 
 
     public function getScreeningRequestRenterId(): int

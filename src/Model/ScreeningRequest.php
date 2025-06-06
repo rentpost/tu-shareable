@@ -15,49 +15,43 @@ class ScreeningRequest
     use Validate;
 
 
-    protected ?int $screeningRequestId = null;
+    private ?int $screeningRequestId = null;
 
-    #[Assert\NotBlank]
-    protected int $landlordId;
-
-    #[Assert\NotBlank]
-    protected int $propertyId;
-
-    #[Assert\NotBlank]
-    protected int $initialBundleId;
-
-    protected ?Date $createdOn;
-
-    protected ?Date $modifiedOn;
-
-    protected ?string $propertyName;
-
-    protected ?string $propertySummaryAddress;
-
-    /**
-     * @var ScreeningRequestRenter[]
-     */
-    protected array $screeningRequestRenters = [];
+    /** @var ScreeningRequestRenter[] */
+    private array $screeningRequestRenters = [];
 
 
     public function __construct(
-        int $landlordId,
-        int $propertyId,
-        int $initialBundleId,
-        ?Date $createdOn = null,
-        ?Date $modifiedOn = null,
-        ?string $propertyName = null,
-        ?string $propertySummaryAddress = null
-    ) {
-        $this->landlordId = $landlordId;
-        $this->propertyId = $propertyId;
-        $this->initialBundleId = $initialBundleId;
-        $this->createdOn = $createdOn;
-        $this->modifiedOn = $modifiedOn;
-        $this->propertyName = $propertyName;
-        $this->propertySummaryAddress = $propertySummaryAddress;
+        #[Assert\NotBlank]
+        private readonly int $landlordId,
 
+        #[Assert\NotBlank]
+        private readonly int $propertyId,
+
+        #[Assert\NotBlank]
+        private readonly int $initialBundleId,
+
+        private ?Date $createdOn = null,
+        private ?Date $modifiedOn = null,
+
+        private ?string $propertyName = null,
+        private ?string $propertySummaryAddress = null,
+
+        private ?AttestationGroup $attestationGroup = null,
+    ) {
         $this->validate();
+    }
+
+
+    public function setScreeningRequestId(?int $val): void
+    {
+        $this->screeningRequestId = $val;
+    }
+
+
+    public function getScreeningRequestId(): ?int
+    {
+        return $this->screeningRequestId;
     }
 
 
@@ -69,9 +63,12 @@ class ScreeningRequest
     }
 
 
-    public function getScreeningRequestId(): ?int
+    /**
+     * @return ScreeningRequestRenter[]
+     */
+    public function getScreeningRequestRenters(): array
     {
-        return $this->screeningRequestId;
+        return $this->screeningRequestRenters;
     }
 
 
@@ -93,9 +90,21 @@ class ScreeningRequest
     }
 
 
+    public function setCreatedOn(?Date $val): void
+    {
+        $this->createdOn = $val;
+    }
+
+
     public function getCreatedOn(): ?Date
     {
         return $this->createdOn;
+    }
+
+
+    public function setModifiedOn(?Date $val): void
+    {
+        $this->modifiedOn = $val;
     }
 
 
@@ -117,36 +126,19 @@ class ScreeningRequest
     }
 
 
-    /**
-     * @return ScreeningRequestRenter[]
-     */
-    public function getScreeningRequestRenters(): array
+    public function setAttestationGroup(?AttestationGroup $val): void
     {
-        return $this->screeningRequestRenters;
+        $this->attestationGroup = $val;
     }
 
 
-    public function setScreeningRequestId(?int $val): void
+    public function getAttestationGroup(): ?AttestationGroup
     {
-        $this->screeningRequestId = $val;
+        return $this->attestationGroup;
     }
 
 
-    public function setCreatedOn(?Date $val): void
-    {
-        $this->createdOn = $val;
-    }
-
-
-    public function setModifiedOn(?Date $val): void
-    {
-        $this->modifiedOn = $val;
-    }
-
-
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function toArray(): array
     {
         $array = [];
@@ -181,6 +173,33 @@ class ScreeningRequest
         }
         $array['screeningRequestRenters'] = $renters;
 
+        if ($this->attestationGroup) {
+            $array['attestation'] = $this->attestationGroup->toArray();
+        }
+
         return $array;
+    }
+
+
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $request = new self(
+            $data['landlordId'],
+            $data['propertyId'],
+            $data['initialBundleId'],
+            $data['createdOn'] ? new Date(substr($data['createdOn'], 0, 10)) : null,
+            $data['modifiedOn'] ? new Date(substr($data['modifiedOn'], 0, 10)) : null,
+            $data['propertyName'] ?? null,
+            $data['propertySummaryAddress'] ?? null,
+        );
+
+        $request->setScreeningRequestId($data['screeningRequestId'] ?? null);
+
+        foreach ($data['screeningRequestRenters'] as $renterInfo) {
+            $request->addScreeningRequestRenter(ScreeningRequestRenter::fromArray($renterInfo));
+        }
+
+        return $request;
     }
 }

@@ -10,16 +10,10 @@ namespace Rentpost\TUShareable\Model;
 class ExamQuestionAnswer
 {
 
-    protected string $choiceKeyName;
-
-    protected string $choiceDisplayName;
-
-
-    public function __construct(string $choiceKeyName, string $choiceDisplayName)
-    {
-        $this->choiceKeyName = $choiceKeyName;
-        $this->choiceDisplayName = $choiceDisplayName;
-    }
+    public function __construct(
+        private string $choiceKeyName,
+        private string $choiceDisplayName,
+    ) {}
 
 
     public function getChoiceKeyName(): string
