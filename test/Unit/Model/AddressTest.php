@@ -14,22 +14,30 @@ class AddressTest extends TestCase
 
     public function testConstructorAndGetters(): void
     {
-        $addr = new Address('Street 1', 'Suburb 2', 'Apartment 3', 'Room 4', 'Miami', 'FL', '12345');
+        $addr = new Address(
+            'Street 1 & -test_~/*',
+            'Suburb 2 (test*)',
+            'Apartment #3',
+            'Room +4',
+            'Miami',
+            'FL',
+            '12345',
+        );
 
-        $this->assertSame('Street 1', $addr->getAddressLine1());
-        $this->assertSame('Suburb 2', $addr->getAddressLine2());
-        $this->assertSame('Apartment 3', $addr->getAddressLine3());
-        $this->assertSame('Room 4', $addr->getAddressLine4());
+        $this->assertSame('Street 1 & -test_~/*', $addr->getAddressLine1());
+        $this->assertSame('Suburb 2 (test*)', $addr->getAddressLine2());
+        $this->assertSame('Apartment #3', $addr->getAddressLine3());
+        $this->assertSame('Room +4', $addr->getAddressLine4());
         $this->assertSame('Miami', $addr->getLocality());
         $this->assertSame('FL', $addr->getRegion());
         $this->assertSame('12345', $addr->getPostalCode());
         $this->assertSame('US', $addr->getCountry());
 
         $this->assertSame([
-            'addressLine1' => 'Street 1',
-            'addressLine2' => 'Suburb 2',
-            'addressLine3' => 'Apartment 3',
-            'addressLine4' => 'Room 4',
+            'addressLine1' => 'Street 1 & -test_~/*',
+            'addressLine2' => 'Suburb 2 (test*)',
+            'addressLine3' => 'Apartment #3',
+            'addressLine4' => 'Room +4',
             'locality' => 'Miami',
             'region' => 'FL',
             'postalCode' => '12345',
@@ -54,6 +62,10 @@ class AddressTest extends TestCase
             [ ['Street 1', '', '', '', 'too-long-locality-value-here', 'FL', '12345'], 'locality', 'This value is too long. It should have 27 characters or less.' ],
             // invalid state
             [ ['Street 1', '', '', '', 'City', 'XX', '12345'], 'region', 'The value is not a valid US state.' ],
+            // invalid characters
+            [ ['Invalid character "', '', '', '', 'St Pete', 'FL', '12345'], 'region', 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.' ],
+            [ ['Invalid character $', '', '', '', 'St Pete', 'FL', '12345'], 'region', 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.' ],
+            [ ['Invalid character @', '', '', '', 'St Pete', 'FL', '12345'], 'region', 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.' ],
         ];
     }
 

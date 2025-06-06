@@ -18,15 +18,31 @@ class Address
     public function __construct(
         #[Assert\NotBlank]
         #[Assert\Length(min: 1, max: 50)]
+        #[Assert\Regex(
+            pattern: '/^[a-zA-Z0-9 #()&.,\'\-_\+~\/\*]*$/',
+            message: 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.',
+        )]
         private string $addressLine1,
 
         #[Assert\Length(max: 100)]
+        #[Assert\Regex(
+            pattern: '/^[a-zA-Z0-9 #()&.,\'\-_\+~\/\*]*$/',
+            message: 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.',
+        )]
         private ?string $addressLine2,
 
         #[Assert\Length(max: 100)]
+        #[Assert\Regex(
+            pattern: '/^[a-zA-Z0-9 #()&.,\'\-_\+~\/\*]*$/',
+            message: 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.',
+        )]
         private ?string $addressLine3,
 
         #[Assert\Length(max: 100)]
+        #[Assert\Regex(
+            pattern: '/^[a-zA-Z0-9 #()&.,\'\-_\+~\/\*]*$/',
+            message: 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.',
+        )]
         private ?string $addressLine4,
 
         #[Assert\NotBlank]
