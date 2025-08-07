@@ -4,8 +4,12 @@ declare(strict_types = 1);
 
 namespace Rentpost\TUShareable\Model;
 
+use ArchTech\Enums\From;
+
 enum RenterStatus: string
 {
+    use From;
+
     case IdentityVerificationPending = 'IdentityVerificationPending';
     case ScreeningRequestCanceled = 'ScreeningRequestCanceled';
     case ReadyForReportRequest = 'ReadyForReportRequest';
