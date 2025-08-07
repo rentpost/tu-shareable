@@ -6,8 +6,15 @@ namespace Rentpost\TUShareable\Model;
 
 enum RequestedProduct: string
 {
-    case Credit = 'Credit';
-    case Criminal = 'Criminal';
-    case Eviction = 'Eviction Proceedings';
-    case IdReport = 'ID Report';
+    case All = 'all';
+    case None = 'none';
+
+    case CanadaCredit = 'canada-credit';
+    case CanadaModelCredit = 'canada-model-credit';
+    case Credit = 'credit';
+    case Criminal = 'criminal';
+    case Eviction = 'eviction';
+    case IdReport = 'id-report';
+    case IncomeInsights = 'income-insights';
+    case ResidentScore = 'resident-score';
 }
