@@ -21,7 +21,7 @@ class Phone
         private string $number,
 
         #[Assert\NotBlank]
-        #[Assert\Choice(['Mobile', 'Home', 'Office'])]
+        #[Assert\Choice(choices: ['Mobile', 'Home', 'Office'])]
         private string $type,
     ) {
         $this->validate();

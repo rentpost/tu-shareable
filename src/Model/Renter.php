@@ -23,14 +23,14 @@ class Renter
         private Money $income,
 
         #[Assert\NotBlank]
-        #[Assert\Choice(['PerMonth', 'PerYear'])]
+        #[Assert\Choice(choices: ['PerMonth', 'PerYear'])]
         private string $incomeFrequency,
 
         #[Assert\NotBlank]
         private Money $otherIncome,
 
         #[Assert\NotBlank]
-        #[Assert\Choice(['PerMonth', 'PerYear'])]
+        #[Assert\Choice(choices: ['PerMonth', 'PerYear'])]
         private string $otherIncomeFrequency,
 
         #[Assert\NotBlank]
