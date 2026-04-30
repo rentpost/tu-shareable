@@ -21,6 +21,22 @@ class Address
         . 'forward slashes and asterisks.';
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            $data['addressLine1'],
+            $data['addressLine2'] ?? null,
+            $data['addressLine3'] ?? null,
+            $data['addressLine4'] ?? null,
+            $data['locality'],
+            $data['region'],
+            $data['postalCode'],
+            $data['country'],
+        );
+    }
+
+
     public function __construct(
         #[Assert\NotBlank]
         #[Assert\Length(min: 1, max: 50)]
@@ -246,21 +262,5 @@ class Address
         ]);
 
         return $array;
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            $data['addressLine1'],
-            $data['addressLine2'] ?? null,
-            $data['addressLine3'] ?? null,
-            $data['addressLine4'] ?? null,
-            $data['locality'],
-            $data['region'],
-            $data['postalCode'],
-            $data['country'],
-        );
     }
 }

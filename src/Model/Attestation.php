@@ -13,6 +13,20 @@ class Attestation
     use Validate;
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            $data['attestationId'],
+            $data['attestationTypeId'],
+            $data['name'],
+            $data['legalText'],
+            $data['affirmativeRequired'],
+            $data['additionalInformation'],
+        );
+    }
+
+
     public function __construct(
         private int $attestationId,
         private int $attestationTypeId,
@@ -72,19 +86,5 @@ class Attestation
             'affirmativeRequired' => $this->affirmativeRequired,
             'additionalInformation' => $this->additionalInformation,
         ];
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            $data['attestationId'],
-            $data['attestationTypeId'],
-            $data['name'],
-            $data['legalText'],
-            $data['affirmativeRequired'],
-            $data['additionalInformation'],
-        );
     }
 }

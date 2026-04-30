@@ -12,20 +12,6 @@ use Rentpost\TUShareable\ValidationException;
 class PhoneTest extends TestCase
 {
 
-    public function testConstructorAndGetters(): void
-    {
-        $phone = new Phone('0123456789', 'Home');
-
-        $this->assertSame('0123456789', $phone->getNumber());
-        $this->assertSame('Home', $phone->getType());
-
-        $this->assertSame([
-            'phoneNumber' => '0123456789',
-            'phoneType' => 'Home',
-        ], $phone->toArray());
-    }
-
-
     /** @return array<array<int, string>> */
     public static function validationProvider(): array
     {
@@ -38,6 +24,20 @@ class PhoneTest extends TestCase
             // invalid type
             [ '1234567890', 'Unknown', 'The value you selected is not a valid choice.' ],
         ];
+    }
+
+
+    public function testConstructorAndGetters(): void
+    {
+        $phone = new Phone('0123456789', 'Home');
+
+        $this->assertSame('0123456789', $phone->getNumber());
+        $this->assertSame('Home', $phone->getType());
+
+        $this->assertSame([
+            'phoneNumber' => '0123456789',
+            'phoneType' => 'Home',
+        ], $phone->toArray());
     }
 
 

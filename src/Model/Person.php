@@ -18,6 +18,30 @@ class Person
     private ?int $personId = null;
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $ssn = $data['socialSecurityNumber'] ?? null;
+        $dob = $data['dateOfBirth'] ?? null;
+
+        $person = new self(
+            new Email($data['emailAddress']),
+            $data['firstName'],
+            $data['middleName'] ?? null,
+            $data['lastName'],
+            new Phone($data['phoneNumber'], $data['phoneType']),
+            $ssn ? new SocialSecurityNumber($ssn) : null,
+            $dob ? new Date($dob) : null,
+            Address::fromArray($data['homeAddress']),
+            boolval($data['acceptedTermsAndConditions']),
+        );
+
+        $person->setPersonId($data['personId'] ?? null);
+
+        return $person;
+    }
+
+
     public function __construct(
         #[Assert\NotBlank]
         private Email $emailAddress,
@@ -201,29 +225,5 @@ class Person
         $array['acceptedTermsAndConditions'] = $this->acceptedTermsAndConditions;
 
         return $array;
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        $ssn = $data['socialSecurityNumber'] ?? null;
-        $dob = $data['dateOfBirth'] ?? null;
-
-        $person = new self(
-            new Email($data['emailAddress']),
-            $data['firstName'],
-            $data['middleName'] ?? null,
-            $data['lastName'],
-            new Phone($data['phoneNumber'], $data['phoneType']),
-            $ssn ? new SocialSecurityNumber($ssn) : null,
-            $dob ? new Date($dob) : null,
-            Address::fromArray($data['homeAddress']),
-            boolval($data['acceptedTermsAndConditions']),
-        );
-
-        $person->setPersonId($data['personId'] ?? null);
-
-        return $person;
     }
 }

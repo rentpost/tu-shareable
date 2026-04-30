@@ -41,6 +41,22 @@ class LandlordTest extends TestCase
     }
 
 
+    /**
+     * @return array<array<string, string|bool>>
+     */
+    public static function validationProvider(): array
+    {
+        return [
+            // No first name
+            [ '', 'Last', 'Business', true, 'This value should not be blank.' ],
+            // No last name
+            [ 'First', '', 'Business', true, 'This value should not be blank.' ],
+            // Not accepted terms
+            [ 'First', 'Last', 'Business', false, 'Terms and conditions need to be accepted.' ],
+        ];
+    }
+
+
     public function testConstructorAndGetters(): void
     {
         $landlord = $this->makeObject('First', 'Last', 'Business', true);
@@ -74,22 +90,6 @@ class LandlordTest extends TestCase
             ],
             'acceptedTermsAndConditions' => true,
         ], $landlord->toArray());
-    }
-
-
-    /**
-     * @return array<array<string, string|bool>>
-     */
-    public static function validationProvider(): array
-    {
-        return [
-            // No first name
-            [ '', 'Last', 'Business', true, 'This value should not be blank.' ],
-            // No last name
-            [ 'First', '', 'Business', true, 'This value should not be blank.' ],
-            // Not accepted terms
-            [ 'First', 'Last', 'Business', false, 'Terms and conditions need to be accepted.' ],
-        ];
     }
 
 

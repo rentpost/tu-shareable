@@ -14,6 +14,22 @@ class Reports
     private array $reports = [];
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $reports = new self($data['reportsExpireNumberOfDays']);
+
+        foreach ($data['reportResponseModelDetails'] as $reportInfo) {
+            $reports->addReport(new Report(
+                $reportInfo['providerName'],
+                $reportInfo['reportData'],
+            ));
+        }
+
+        return $reports;
+    }
+
+
     public function __construct(private int $reportsExpireNumberOfDays)
     {}
 
@@ -36,21 +52,5 @@ class Reports
     public function getReportsExpireNumberOfDays(): int
     {
         return $this->reportsExpireNumberOfDays;
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        $reports = new self($data['reportsExpireNumberOfDays']);
-
-        foreach ($data['reportResponseModelDetails'] as $reportInfo) {
-            $reports->addReport(new Report(
-                $reportInfo['providerName'],
-                $reportInfo['reportData'],
-            ));
-        }
-
-        return $reports;
     }
 }

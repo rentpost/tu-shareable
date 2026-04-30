@@ -17,40 +17,6 @@ class AddressTest extends TestCase
         . 'forward slashes and asterisks.';
 
 
-    public function testConstructorAndGetters(): void
-    {
-        $addr = new Address(
-            'Street 1 & -test_~/*',
-            'Suburb 2 (test*)',
-            'Apartment #3',
-            'Room +4',
-            'Miami',
-            'FL',
-            '12345',
-        );
-
-        $this->assertSame('Street 1 & -test_~/*', $addr->getAddressLine1());
-        $this->assertSame('Suburb 2 (test*)', $addr->getAddressLine2());
-        $this->assertSame('Apartment #3', $addr->getAddressLine3());
-        $this->assertSame('Room +4', $addr->getAddressLine4());
-        $this->assertSame('Miami', $addr->getLocality());
-        $this->assertSame('FL', $addr->getRegion());
-        $this->assertSame('12345', $addr->getPostalCode());
-        $this->assertSame('US', $addr->getCountry());
-
-        $this->assertSame([
-            'addressLine1' => 'Street 1 & -test_~/*',
-            'addressLine2' => 'Suburb 2 (test*)',
-            'addressLine3' => 'Apartment #3',
-            'addressLine4' => 'Room +4',
-            'locality' => 'Miami',
-            'region' => 'FL',
-            'postalCode' => '12345',
-            'country' => 'US',
-        ], $addr->toArray());
-    }
-
-
     /**
      * @return array<array<string, string>>
      */
@@ -107,6 +73,40 @@ class AddressTest extends TestCase
                 self::INVALID_CHARS_MESSAGE,
             ],
         ];
+    }
+
+
+    public function testConstructorAndGetters(): void
+    {
+        $addr = new Address(
+            'Street 1 & -test_~/*',
+            'Suburb 2 (test*)',
+            'Apartment #3',
+            'Room +4',
+            'Miami',
+            'FL',
+            '12345',
+        );
+
+        $this->assertSame('Street 1 & -test_~/*', $addr->getAddressLine1());
+        $this->assertSame('Suburb 2 (test*)', $addr->getAddressLine2());
+        $this->assertSame('Apartment #3', $addr->getAddressLine3());
+        $this->assertSame('Room +4', $addr->getAddressLine4());
+        $this->assertSame('Miami', $addr->getLocality());
+        $this->assertSame('FL', $addr->getRegion());
+        $this->assertSame('12345', $addr->getPostalCode());
+        $this->assertSame('US', $addr->getCountry());
+
+        $this->assertSame([
+            'addressLine1' => 'Street 1 & -test_~/*',
+            'addressLine2' => 'Suburb 2 (test*)',
+            'addressLine3' => 'Apartment #3',
+            'addressLine4' => 'Room +4',
+            'locality' => 'Miami',
+            'region' => 'FL',
+            'postalCode' => '12345',
+            'country' => 'US',
+        ], $addr->toArray());
     }
 
 

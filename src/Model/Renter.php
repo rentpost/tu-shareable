@@ -15,6 +15,28 @@ class Renter
     use Validate;
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $msex = $data['multiShareExpirationDate'] ?? null;
+
+        $renter = new self(
+            Person::fromArray($data),
+            new Money((string)$data['income']),
+            $data['incomeFrequency'],
+            new Money((string)$data['otherIncome']),
+            $data['otherIncomeFrequency'],
+            new Money((string)$data['assets']),
+            EmploymentStatus::from($data['employmentStatus']),
+            $msex ? new Date($msex) : null,
+        );
+
+        $renter->setRenterId($data['renterId'] ?? null);
+
+        return $renter;
+    }
+
+
     public function __construct(
         #[Assert\NotBlank]
         private Person $person,
@@ -165,27 +187,5 @@ class Renter
         }
 
         return $array;
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        $msex = $data['multiShareExpirationDate'] ?? null;
-
-        $renter = new self(
-            Person::fromArray($data),
-            new Money((string)$data['income']),
-            $data['incomeFrequency'],
-            new Money((string)$data['otherIncome']),
-            $data['otherIncomeFrequency'],
-            new Money((string)$data['assets']),
-            EmploymentStatus::from($data['employmentStatus']),
-            $msex ? new Date($msex) : null,
-        );
-
-        $renter->setRenterId($data['renterId'] ?? null);
-
-        return $renter;
     }
 }

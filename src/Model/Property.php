@@ -19,6 +19,26 @@ class Property
     private bool $isActive = true;
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $property = new self(
+            $data['propertyName'],
+            new Money((string)$data['rent']),
+            new Money((string)$data['deposit']),
+            Address::fromArray($data),
+            boolval($data['bankruptcyCheck']),
+            $data['bankruptcyTimeFrame'],
+            $data['incomeToRentRatio'],
+        );
+
+        $property->setPropertyId($data['propertyId'] ?? null);
+        $property->setIsActive(boolval($data['isActive']));
+
+        return $property;
+    }
+
+
     /**
      * Constructor
      *
@@ -176,25 +196,5 @@ class Property
         $array['incomeToRentRatio'] = $this->incomeToRentRatio;
 
         return $array;
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        $property = new self(
-            $data['propertyName'],
-            new Money((string)$data['rent']),
-            new Money((string)$data['deposit']),
-            Address::fromArray($data),
-            boolval($data['bankruptcyCheck']),
-            $data['bankruptcyTimeFrame'],
-            $data['incomeToRentRatio'],
-        );
-
-        $property->setPropertyId($data['propertyId'] ?? null);
-        $property->setIsActive(boolval($data['isActive']));
-
-        return $property;
     }
 }

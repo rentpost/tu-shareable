@@ -14,6 +14,22 @@ use Rentpost\TUShareable\WebhookParser;
 class WebhookParserTest extends TestCase
 {
 
+    protected function createMockRequest(string $data): RequestInterface
+    {
+        $stream = $this->createStub(StreamInterface::class);
+
+        $stream->method('getContents')
+            ->willReturn($data);
+
+        $request = $this->createStub(RequestInterface::class);
+
+        $request->method('getBody')
+            ->willReturn($stream);
+
+        return $request;
+    }
+
+
     public function testParseReportDelivery(): void
     {
         $data = json_encode([
@@ -45,21 +61,5 @@ class WebhookParserTest extends TestCase
         $this->assertInstanceOf(WebhookAuthenticationStatus::class, $result);
         $this->assertSame(12_345, $result->getScreeningRequestRenterId());
         $this->assertSame('Passed', $result->getManualAuthenticationStatus());
-    }
-
-
-    protected function createMockRequest(string $data): RequestInterface
-    {
-        $stream = $this->createStub(StreamInterface::class);
-
-        $stream->method('getContents')
-            ->willReturn($data);
-
-        $request = $this->createStub(RequestInterface::class);
-
-        $request->method('getBody')
-            ->willReturn($stream);
-
-        return $request;
     }
 }

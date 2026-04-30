@@ -47,6 +47,20 @@ class PersonTest extends TestCase
     }
 
 
+    /** @return array<array<string, mixed>> */
+    public static function validationProvider(): array
+    {
+        return [
+            // No first name
+            [ '', 'Middle', 'Last', true, 'This value should not be blank.' ],
+            // No last name
+            [ 'First', 'Middle', '', true, 'This value should not be blank.' ],
+            // Not accepted terms
+            [ 'First', 'Middle', 'Last', false, 'Terms and conditions need to be accepted.' ],
+        ];
+    }
+
+
     public function testConstructorAndGetters(): void
     {
         $person = $this->makeObject('First', 'Middle', 'Last', true);
@@ -84,20 +98,6 @@ class PersonTest extends TestCase
             ],
             'acceptedTermsAndConditions' => true,
         ], $person->toArray());
-    }
-
-
-    /** @return array<array<string, mixed>> */
-    public static function validationProvider(): array
-    {
-        return [
-            // No first name
-            [ '', 'Middle', 'Last', true, 'This value should not be blank.' ],
-            // No last name
-            [ 'First', 'Middle', '', true, 'This value should not be blank.' ],
-            // Not accepted terms
-            [ 'First', 'Middle', 'Last', false, 'Terms and conditions need to be accepted.' ],
-        ];
     }
 
 

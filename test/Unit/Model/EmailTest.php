@@ -12,14 +12,6 @@ use Rentpost\TUShareable\ValidationException;
 class EmailTest extends TestCase
 {
 
-    public function testConstructorAndGetters(): void
-    {
-        $email = new Email('test@example.com');
-
-        $this->assertSame('test@example.com', $email->getValue());
-    }
-
-
     /**
      * @return array<array<string>>
      */
@@ -29,6 +21,14 @@ class EmailTest extends TestCase
             [ '', 'This value should not be blank.' ],
             [ 'abc', 'This value is not a valid email address.' ],
         ];
+    }
+
+
+    public function testConstructorAndGetters(): void
+    {
+        $email = new Email('test@example.com');
+
+        $this->assertSame('test@example.com', $email->getValue());
     }
 
 

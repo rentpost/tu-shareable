@@ -12,14 +12,6 @@ use Rentpost\TUShareable\ValidationException;
 class DateTest extends TestCase
 {
 
-    public function testConstructorAndGetters(): void
-    {
-        $date = new Date('2022-01-01');
-
-        $this->assertSame('2022-01-01', $date->getValue());
-    }
-
-
     /**
      * @return array<array<string>>
      */
@@ -30,6 +22,14 @@ class DateTest extends TestCase
             [ '123-01-01' ],
             [ 'abc' ],
         ];
+    }
+
+
+    public function testConstructorAndGetters(): void
+    {
+        $date = new Date('2022-01-01');
+
+        $this->assertSame('2022-01-01', $date->getValue());
     }
 
 
