@@ -650,21 +650,64 @@ class IntegrationTest extends TestCase
 
 
     /**
-     * Cancellation must run last.  Cancelling earlier marks the screening request
-     * as terminal in the TU sandbox, which then makes testCreateExam fail with
-     * "IDV not possible as the reports were already generated".
+     * Cancellation can't reuse the main screening request: by the time the report
+     * chain finishes, TU treats it as terminal and rejects cancel with
+     * `ScreeningRequestCannotCancel`.  And running before reports breaks
+     * testCreateExam with `IDVNotPossible`.  So this test stands up its own
+     * fresh, never-completed screening request, adds the renter to it, and
+     * cancels that one.
      */
-    #[Depends('testAddRenterToScreeningRequest')]
+    #[Depends('testUpdateLandlord')]
+    #[Depends('testUpdateProperty')]
+    #[Depends('testUpdateRenter')]
     #[Depends('testGetReportsForRenter')]
     public function testCancelScreeningRequestForRenter(
-        ScreeningRequestRenter $screeningRequestRenter,
+        Landlord $landlord,
+        Property $property,
+        Renter $renter,
     ): void
     {
-        self::$client->cancelScreeningRequestForRenter($screeningRequestRenter->getScreeningRequestRenterId());
+        $attestationGroup = self::$client->getAttestationsForProperty(
+            $landlord->getLandlordId(),
+            $property->getPropertyId(),
+        );
 
-        // We don't need to assert anything because if the request
-        // fails an exception is thrown. But we have to assert something
-        // to disable phpunit warning.
+        foreach ($attestationGroup->getAttestations() as $attestation) {
+            $attestationGroup->addAttestationResponse($attestation->getAttestationId(), true);
+        }
+
+        $request = new ScreeningRequest(
+            landlordId: $landlord->getLandlordId(),
+            propertyId: $property->getPropertyId(),
+            initialBundleId: 1_004,
+            attestationGroup: $attestationGroup,
+        );
+
+        self::$client->createScreeningRequest($request);
+
+        $screeningRequestRenter = new ScreeningRequestRenter(
+            $landlord->getLandlordId(),
+            $renter->getRenterId(),
+            1_004,
+            RenterRole::Applicant,
+            null,
+            null,
+            null,
+            $renter->getPerson()->getFirstName(),
+            $renter->getPerson()->getLastName(),
+            $renter->getPerson()->getMiddleName(),
+        );
+
+        self::$client->addRenterToScreeningRequest(
+            $request->getScreeningRequestId(),
+            $screeningRequestRenter,
+        );
+
+        self::$client->cancelScreeningRequestForRenter(
+            $screeningRequestRenter->getScreeningRequestRenterId(),
+        );
+
+        // No assertion needed; an exception would be thrown on failure.
         $this->assertTrue(true);
     }
 }
