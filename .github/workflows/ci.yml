@@ -1,6 +1,7 @@
 # Security review: this workflow uses no untrusted inputs (no github.event.issue.*,
 # pull_request.*body/title, head_commit.message, etc.). All ${{ ... }} expansions
-# are static (github.workflow, github.ref, matrix.php) and safe.
+# are static (github.workflow, github.ref, matrix.php) or pulled from secrets via
+# env, never interpolated into shell commands.
 name: CI
 
 on:
@@ -8,6 +9,7 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -38,3 +40,46 @@ jobs:
 
       - name: Run unit tests
         run: vendor/bin/phpunit --testsuite unit
+
+  # Integration tests hit the real TransUnion ShareAble sandbox API and require
+  # credentials.  They run only on manual maintainer trigger so PR validation
+  # never burns sandbox quota and so secrets are never exposed to fork PRs.
+  #
+  # Required repository secrets (Settings → Secrets and variables → Actions):
+  #   TU_SHAREABLE_URL, TU_SHAREABLE_CLIENT_ID,
+  #   TU_SHAREABLE_API_KEY_ONE, TU_SHAREABLE_API_KEY_TWO
+  integration-tests:
+    name: Integration tests (TU sandbox)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: '--no-interaction --no-progress --prefer-dist'
+
+      - name: Write sandbox config
+        env:
+          TU_URL: ${{ secrets.TU_SHAREABLE_URL }}
+          TU_CLIENT_ID: ${{ secrets.TU_SHAREABLE_CLIENT_ID }}
+          TU_API_KEY_ONE: ${{ secrets.TU_SHAREABLE_API_KEY_ONE }}
+          TU_API_KEY_TWO: ${{ secrets.TU_SHAREABLE_API_KEY_TWO }}
+        run: |
+          {
+            printf 'url="%s"\n' "$TU_URL"
+            printf 'clientId="%s"\n' "$TU_CLIENT_ID"
+            printf 'apiKeyOne="%s"\n' "$TU_API_KEY_ONE"
+            printf 'apiKeyTwo="%s"\n' "$TU_API_KEY_TWO"
+          } > config
+
+      - name: Run integration tests
+        run: vendor/bin/phpunit --testsuite integration
