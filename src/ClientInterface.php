@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace Rentpost\TUShareable;
 
-use Rentpost\TUShareable\Model\Attestation;
 use Rentpost\TUShareable\Model\AttestationGroup;
 use Rentpost\TUShareable\Model\Bundle;
 use Rentpost\TUShareable\Model\CultureCode;

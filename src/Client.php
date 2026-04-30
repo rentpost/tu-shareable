@@ -447,9 +447,10 @@ class Client implements ClientInterface
         ScreeningRequestRenter $screeningRequestRenter,
     ): ScreeningRequestRenter
     {
+        $renterId = $screeningRequestRenter->getRenterId();
         $response = $this->requestJson(
             'POST',
-            "ScreeningRequests/$screeningRequestId/Renters/{$screeningRequestRenter->getRenterId()}/ScreeningRequestRenters",
+            "ScreeningRequests/$screeningRequestId/Renters/$renterId/ScreeningRequestRenters",
             $screeningRequestRenter->toArray(), // No clue on this - docs don't say it's needed, but it is
         );
 

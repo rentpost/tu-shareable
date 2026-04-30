@@ -41,6 +41,34 @@ jobs:
       - name: Run unit tests
         run: vendor/bin/phpunit --testsuite unit
 
+  phpcs:
+    name: phpcs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: '--no-interaction --no-progress --prefer-dist'
+
+      # --warning-severity=0 fails CI only on errors. Warnings (e.g. TU API
+      # field names that contain digits, intentional unused PHPUnit @depends
+      # params) are surfaced in the output but don't block.
+      - name: Run phpcs
+        run: |
+          vendor/bin/phpcs \
+            --standard=vendor/rentpost/coding-standard-php/phpcs.xml \
+            --warning-severity=0 \
+            src/ test/
+
   # Integration tests hit the real TransUnion ShareAble sandbox API and require
   # credentials.  They run only on manual maintainer trigger so PR validation
   # never burns sandbox quota and so secrets are never exposed to fork PRs.

@@ -8,7 +8,9 @@ use ArchTech\Enums\From;
 
 enum EmploymentStatus: string
 {
+
     use From;
+
 
     case NotEmployed = 'NotEmployed';
     case Employed = 'Employed';

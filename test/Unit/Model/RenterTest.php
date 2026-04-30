@@ -124,11 +124,27 @@ class RenterTest extends TestCase
     {
         return [
             // Invalid income frequency
-            ['1000', 'Invalid', '5000', 'PerYear', '12000', EmploymentStatus::SelfEmployed, null,
-                'The value you selected is not a valid choice.', 'incomeFrequency'],
+            [
+                '1000',
+                'Invalid',
+                '5000',
+                'PerYear',
+                '12000',
+                EmploymentStatus::SelfEmployed,
+                null,
+                'The value you selected is not a valid choice.',
+                'incomeFrequency',],
             // Invalid other income frequency
-            ['1000', 'PerMonth', '5000', 'Invalid', '12000', EmploymentStatus::SelfEmployed, null,
-                'The value you selected is not a valid choice.', 'otherIncomeFrequency'],
+            [
+                '1000',
+                'PerMonth',
+                '5000',
+                'Invalid',
+                '12000',
+                EmploymentStatus::SelfEmployed,
+                null,
+                'The value you selected is not a valid choice.',
+                'otherIncomeFrequency',],
         ];
     }
 

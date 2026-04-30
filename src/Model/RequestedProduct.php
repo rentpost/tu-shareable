@@ -8,7 +8,9 @@ use ArchTech\Enums\From;
 
 enum RequestedProduct: string
 {
+
     use From;
+
 
     case All = 'all';
     case None = 'none';

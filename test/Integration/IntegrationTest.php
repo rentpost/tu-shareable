@@ -596,7 +596,7 @@ class IntegrationTest extends TestCase
         // Normally we execute this only after receiving a notification from the service
         // But we can just sleep until they should be finished
 
-        while ((time() - $reportRequestTime) < 60) {
+        while (time() - $reportRequestTime < 60) {
             sleep(1);
         }
 
@@ -634,7 +634,7 @@ class IntegrationTest extends TestCase
         // Normally we execute this only after receiving a notification from the service
         // But we can just sleep until they should be finished
 
-        while ((time() - $reportRequestTime) < 60) {
+        while (time() - $reportRequestTime < 60) {
             sleep(1);
         }
 
