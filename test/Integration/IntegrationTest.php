@@ -482,20 +482,6 @@ class IntegrationTest extends TestCase
     }
 
 
-    #[Depends('testAddRenterToScreeningRequest')]
-    public function testCancelScreeningRequestForRenter(
-        ScreeningRequestRenter $screeningRequestRenter,
-    ): void
-    {
-        self::$client->cancelScreeningRequestForRenter($screeningRequestRenter->getScreeningRequestRenterId());
-
-        // We don't need to assert anything because if the request
-        // fails an exception is thrown. But we have to assert something
-        // to disable phpunit warning.
-        $this->assertTrue(true);
-    }
-
-
     #[Depends('testUpdateRenter')]
     #[Depends('testAddRenterToScreeningRequest')]
     public function testCreateExam(Renter $renter, ScreeningRequestRenter $screeningRequestRenter): Exam
@@ -660,5 +646,25 @@ class IntegrationTest extends TestCase
             // For now just assert the content is long enough rather than parsing the html
             $this->assertGreaterThan(1_024, strlen($report->getReportData()));
         }
+    }
+
+
+    /**
+     * Cancellation must run last.  Cancelling earlier marks the screening request
+     * as terminal in the TU sandbox, which then makes testCreateExam fail with
+     * "IDV not possible as the reports were already generated".
+     */
+    #[Depends('testAddRenterToScreeningRequest')]
+    #[Depends('testGetReportsForRenter')]
+    public function testCancelScreeningRequestForRenter(
+        ScreeningRequestRenter $screeningRequestRenter,
+    ): void
+    {
+        self::$client->cancelScreeningRequestForRenter($screeningRequestRenter->getScreeningRequestRenterId());
+
+        // We don't need to assert anything because if the request
+        // fails an exception is thrown. But we have to assert something
+        // to disable phpunit warning.
+        $this->assertTrue(true);
     }
 }
