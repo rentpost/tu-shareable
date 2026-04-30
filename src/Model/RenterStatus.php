@@ -8,7 +8,9 @@ use ArchTech\Enums\From;
 
 enum RenterStatus: string
 {
+
     use From;
+
 
     case IdentityVerificationPending = 'IdentityVerificationPending';
     case ScreeningRequestCanceled = 'ScreeningRequestCanceled';

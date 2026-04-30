@@ -8,7 +8,9 @@ use ArchTech\Enums\From;
 
 enum RenterRole: string
 {
+
     use From;
+
 
     case Applicant = 'Applicant';
     case CoSigner = 'CoSigner';

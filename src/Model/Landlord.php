@@ -18,6 +18,25 @@ class Landlord
     private ?int $landlordId = null;
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $landlord = new self(
+            new Email($data['emailAddress']),
+            $data['firstName'],
+            $data['lastName'],
+            new Phone($data['phoneNumber'], $data['phoneType']),
+            $data['businessName'] ?? null,
+            Address::fromArray($data['businessAddress']),
+            boolval($data['acceptedTermsAndConditions']),
+        );
+
+        $landlord->setLandlordId($data['landlordId'] ?? null);
+
+        return $landlord;
+    }
+
+
     public function __construct(
         #[Assert\NotBlank]
         private Email $emailAddress,
@@ -166,24 +185,5 @@ class Landlord
         $array['acceptedTermsAndConditions'] = $this->acceptedTermsAndConditions;
 
         return $array;
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        $landlord = new self(
-            new Email($data['emailAddress']),
-            $data['firstName'],
-            $data['lastName'],
-            new Phone($data['phoneNumber'], $data['phoneType']),
-            $data['businessName'] ?? null,
-            Address::fromArray($data['businessAddress']),
-            boolval($data['acceptedTermsAndConditions']),
-        );
-
-        $landlord->setLandlordId($data['landlordId'] ?? null);
-
-        return $landlord;
     }
 }

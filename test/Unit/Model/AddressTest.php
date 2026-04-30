@@ -12,6 +12,70 @@ use Rentpost\TUShareable\ValidationException;
 class AddressTest extends TestCase
 {
 
+    private const INVALID_CHARS_MESSAGE = 'Address field must only contain letters, numbers, spaces, hashes, '
+        . 'parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, '
+        . 'forward slashes and asterisks.';
+
+
+    /**
+     * @return array<array<string, string>>
+     */
+    public static function validationProvider(): array
+    {
+        $tooLongAddress = 'omNScSZL7pBjZYmgGPcFmGbGVs9sJf110IeSSeh5bPSXgb0YkfX';
+        $tooLongLocality = 'too-long-locality-value-here';
+
+        return [
+            // addressLine1 missing
+            [
+                ['', '', '', '', 'City', 'FL', '12345'],
+                'addressLine1',
+                'This value is too short. It should have 1 character or more.',
+            ],
+            // addressLine1 too long
+            [
+                [$tooLongAddress, '', '', '', 'City', 'FL', '12345'],
+                'addressLine1',
+                'This value is too long. It should have 50 characters or less.',
+            ],
+            // locality missing
+            [
+                ['Street 1', '', '', '', '', 'FL', '12345'],
+                'locality',
+                'This value is too short. It should have 2 characters or more.',
+            ],
+            // locality too long
+            [
+                ['Street 1', '', '', '', $tooLongLocality, 'FL', '12345'],
+                'locality',
+                'This value is too long. It should have 27 characters or less.',
+            ],
+            // invalid state
+            [
+                ['Street 1', '', '', '', 'City', 'XX', '12345'],
+                'region',
+                'The value is not a valid US state.',
+            ],
+            // invalid characters
+            [
+                ['Invalid character "', '', '', '', 'St Pete', 'FL', '12345'],
+                'region',
+                self::INVALID_CHARS_MESSAGE,
+            ],
+            [
+                ['Invalid character $', '', '', '', 'St Pete', 'FL', '12345'],
+                'region',
+                self::INVALID_CHARS_MESSAGE,
+            ],
+            [
+                ['Invalid character @', '', '', '', 'St Pete', 'FL', '12345'],
+                'region',
+                self::INVALID_CHARS_MESSAGE,
+            ],
+        ];
+    }
+
+
     public function testConstructorAndGetters(): void
     {
         $addr = new Address(
@@ -43,30 +107,6 @@ class AddressTest extends TestCase
             'postalCode' => '12345',
             'country' => 'US',
         ], $addr->toArray());
-    }
-
-
-    /**
-     * @return array<array<string, string>>
-     */
-    public static function validationProvider(): array
-    {
-        return [
-            // addressLine1 missing
-            [ ['', '', '', '', 'City', 'FL', '12345'], 'addressLine1', 'This value is too short. It should have 1 character or more.' ],
-            // addressLine1 too long
-            [ ['omNScSZL7pBjZYmgGPcFmGbGVs9sJf110IeSSeh5bPSXgb0YkfX', '', '', '', 'City', 'FL', '12345'], 'addressLine1', 'This value is too long. It should have 50 characters or less.' ],
-            // locality missing
-            [ ['Street 1', '', '', '', '', 'FL', '12345'], 'locality', 'This value is too short. It should have 2 characters or more.' ],
-            // locality too long
-            [ ['Street 1', '', '', '', 'too-long-locality-value-here', 'FL', '12345'], 'locality', 'This value is too long. It should have 27 characters or less.' ],
-            // invalid state
-            [ ['Street 1', '', '', '', 'City', 'XX', '12345'], 'region', 'The value is not a valid US state.' ],
-            // invalid characters
-            [ ['Invalid character "', '', '', '', 'St Pete', 'FL', '12345'], 'region', 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.' ],
-            [ ['Invalid character $', '', '', '', 'St Pete', 'FL', '12345'], 'region', 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.' ],
-            [ ['Invalid character @', '', '', '', 'St Pete', 'FL', '12345'], 'region', 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.' ],
-        ];
     }
 
 

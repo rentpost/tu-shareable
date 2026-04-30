@@ -27,15 +27,6 @@ class MoneyTest extends TestCase
     }
 
 
-    #[DataProvider('validProvider')]
-    public function testValidValues(string $value): void
-    {
-        $money = new Money($value);
-
-        $this->assertSame($value, $money->getValue());
-    }
-
-
     /** @return array<array<string>> */
     public static function invalidProvider(): array
     {
@@ -47,6 +38,15 @@ class MoneyTest extends TestCase
             // too many decimals
             [ '1.234' ],
         ];
+    }
+
+
+    #[DataProvider('validProvider')]
+    public function testValidValues(string $value): void
+    {
+        $money = new Money($value);
+
+        $this->assertSame($value, $money->getValue());
     }
 
 

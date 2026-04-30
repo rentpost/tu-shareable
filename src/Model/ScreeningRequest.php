@@ -21,6 +21,29 @@ class ScreeningRequest
     private array $screeningRequestRenters = [];
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $request = new self(
+            $data['landlordId'],
+            $data['propertyId'],
+            $data['initialBundleId'],
+            $data['createdOn'] ? new Date(substr($data['createdOn'], 0, 10)) : null,
+            $data['modifiedOn'] ? new Date(substr($data['modifiedOn'], 0, 10)) : null,
+            $data['propertyName'] ?? null,
+            $data['propertySummaryAddress'] ?? null,
+        );
+
+        $request->setScreeningRequestId($data['screeningRequestId'] ?? null);
+
+        foreach ($data['screeningRequestRenters'] as $renterInfo) {
+            $request->addScreeningRequestRenter(ScreeningRequestRenter::fromArray($renterInfo));
+        }
+
+        return $request;
+    }
+
+
     public function __construct(
         #[Assert\NotBlank]
         private readonly int $landlordId,
@@ -178,28 +201,5 @@ class ScreeningRequest
         }
 
         return $array;
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        $request = new self(
-            $data['landlordId'],
-            $data['propertyId'],
-            $data['initialBundleId'],
-            $data['createdOn'] ? new Date(substr($data['createdOn'], 0, 10)) : null,
-            $data['modifiedOn'] ? new Date(substr($data['modifiedOn'], 0, 10)) : null,
-            $data['propertyName'] ?? null,
-            $data['propertySummaryAddress'] ?? null,
-        );
-
-        $request->setScreeningRequestId($data['screeningRequestId'] ?? null);
-
-        foreach ($data['screeningRequestRenters'] as $renterInfo) {
-            $request->addScreeningRequestRenter(ScreeningRequestRenter::fromArray($renterInfo));
-        }
-
-        return $request;
     }
 }

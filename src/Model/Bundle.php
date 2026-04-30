@@ -15,6 +15,16 @@ class Bundle
     use Validate;
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            $data['bundleId'],
+            $data['name'],
+        );
+    }
+
+
     public function __construct(
         #[Assert\NotBlank]
         private int $bundleId,
@@ -44,15 +54,5 @@ class Bundle
             'bundleId' => $this->bundleId,
             'name' => $this->name,
         ];
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            $data['bundleId'],
-            $data['name'],
-        );
     }
 }

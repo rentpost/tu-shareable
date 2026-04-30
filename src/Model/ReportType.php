@@ -6,6 +6,7 @@ namespace Rentpost\TUShareable\Model;
 
 enum ReportType: string
 {
+
     case Html = 'html';
     case Json = 'json';
 }

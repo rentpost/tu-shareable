@@ -41,6 +41,27 @@ jobs:
       - name: Run unit tests
         run: vendor/bin/phpunit --testsuite unit
 
+  phpcs:
+    name: phpcs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: '--no-interaction --no-progress --prefer-dist'
+
+      - name: Run phpcs
+        run: vendor/bin/phpcs --standard=vendor/rentpost/coding-standard-php/phpcs.xml src/ test/
+
   # Integration tests hit the real TransUnion ShareAble sandbox API and require
   # credentials.  They run only on manual maintainer trigger so PR validation
   # never burns sandbox quota and so secrets are never exposed to fork PRs.

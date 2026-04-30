@@ -19,6 +19,27 @@ class AttestationGroup
     private ?array $attestationResponses = null;
 
 
+    /** @param array<string, int|array<string, mixed>|null> $data */
+    public static function fromArray(array $data): self
+    {
+        $attestationGroupId = $data['attestationGroupId'];
+
+        $attestations = [];
+        foreach (($data['attestations'] ?? []) as $attestation) {
+            $attestations[] = new Attestation(
+                $attestation['attestationId'],
+                $attestation['attestationTypeId'],
+                $attestation['name'] ?? null,
+                $attestation['legalText'] ?? null,
+                $attestation['affirmativeRequired'],
+                $attestation['additionalInformation'] ?? null,
+            );
+        }
+
+        return new self($attestationGroupId, $attestations);
+    }
+
+
     public function __construct(
         private readonly int $attestationGroupId,
 
@@ -52,27 +73,6 @@ class AttestationGroup
     public function addAttestationResponse(int $attestationId, bool $isAffirmative): void
     {
         $this->attestationResponses[] = new AttestationResponse($attestationId, $isAffirmative);
-    }
-
-
-    /** @param array<string, int|array<string, mixed>|null> $data */
-    public static function fromArray(array $data): self
-    {
-        $attestationGroupId = $data['attestationGroupId'];
-
-        $attestations = [];
-        foreach (($data['attestations'] ?? []) as $attestation) {
-            $attestations[] = new Attestation(
-                $attestation['attestationId'],
-                $attestation['attestationTypeId'],
-                $attestation['name'] ?? null,
-                $attestation['legalText'] ?? null,
-                $attestation['affirmativeRequired'],
-                $attestation['additionalInformation'] ?? null,
-            );
-        }
-
-        return new self($attestationGroupId, $attestations);
     }
 
 

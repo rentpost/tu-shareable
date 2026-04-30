@@ -12,14 +12,6 @@ use Rentpost\TUShareable\ValidationException;
 class SocialSecurityNumberTest extends TestCase
 {
 
-    public function testConstructorAndGetters(): void
-    {
-        $ssn = new SocialSecurityNumber('123456789');
-
-        $this->assertSame('123456789', $ssn->getValue());
-    }
-
-
     /** @return array<array<int, string>>*/
     public static function validationProvider(): array
     {
@@ -30,6 +22,14 @@ class SocialSecurityNumberTest extends TestCase
             // too long
             [ '1234567890', 'The value is not a valid social security number.' ],
         ];
+    }
+
+
+    public function testConstructorAndGetters(): void
+    {
+        $ssn = new SocialSecurityNumber('123456789');
+
+        $this->assertSame('123456789', $ssn->getValue());
     }
 
 

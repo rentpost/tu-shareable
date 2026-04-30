@@ -40,6 +40,21 @@ class PropertyTest extends TestCase
     }
 
 
+    /** @return array<array<int,string>> */
+    public static function validationProvider(): array
+    {
+        return [
+            // No name
+            [ '', 'This value should not be blank.' ],
+            // Too long name
+            [
+                'C1bj6YXjJbGyARqKRljur7mXTUWe1uyWMqECWdCICEWDUv169qU66CT4gztMc9AiRWelsynyT1jMnPsuCz9MfErN9S3XigeDIbJZn',
+                'This value is too long. It should have 100 characters or less.',
+            ],
+        ];
+    }
+
+
     public function testConstructorAndGetters(): void
     {
         $property = $this->makeObject('Apartment', true, 20, 90);
@@ -72,21 +87,6 @@ class PropertyTest extends TestCase
             'bankruptcyTimeFrame' => 20,
             'incomeToRentRatio' => 90,
         ], $property->toArray());
-    }
-
-
-    /** @return array<array<int,string>> */
-    public static function validationProvider(): array
-    {
-        return [
-            // No name
-            [ '', 'This value should not be blank.' ],
-            // Too long name
-            [
-                'C1bj6YXjJbGyARqKRljur7mXTUWe1uyWMqECWdCICEWDUv169qU66CT4gztMc9AiRWelsynyT1jMnPsuCz9MfErN9S3XigeDIbJZn',
-                'This value is too long. It should have 100 characters or less.',
-            ],
-        ];
     }
 
 

@@ -6,6 +6,9 @@ namespace Rentpost\TUShareable\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
+// addressLine1..4 are TU API field names; renaming would break the wire contract.
+// phpcs:disable Zend.NamingConventions.ValidVariableName.ContainsNumbers
+
 /**
  * Class that represents an address.
  */
@@ -15,34 +18,44 @@ class Address
     use Validate;
 
 
+    private const ADDRESS_PATTERN = '/^[a-zA-Z0-9 #()&.,\'\-_\+~\/\*]*$/';
+    private const ADDRESS_PATTERN_MESSAGE = 'Address field must only contain letters, numbers, spaces, hashes, '
+        . 'parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, '
+        . 'forward slashes and asterisks.';
+
+
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            $data['addressLine1'],
+            $data['addressLine2'] ?? null,
+            $data['addressLine3'] ?? null,
+            $data['addressLine4'] ?? null,
+            $data['locality'],
+            $data['region'],
+            $data['postalCode'],
+            $data['country'],
+        );
+    }
+
+
     public function __construct(
         #[Assert\NotBlank]
         #[Assert\Length(min: 1, max: 50)]
-        #[Assert\Regex(
-            pattern: '/^[a-zA-Z0-9 #()&.,\'\-_\+~\/\*]*$/',
-            message: 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.',
-        )]
+        #[Assert\Regex(pattern: self::ADDRESS_PATTERN, message: self::ADDRESS_PATTERN_MESSAGE)]
         private string $addressLine1,
 
         #[Assert\Length(max: 100)]
-        #[Assert\Regex(
-            pattern: '/^[a-zA-Z0-9 #()&.,\'\-_\+~\/\*]*$/',
-            message: 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.',
-        )]
+        #[Assert\Regex(pattern: self::ADDRESS_PATTERN, message: self::ADDRESS_PATTERN_MESSAGE)]
         private ?string $addressLine2,
 
         #[Assert\Length(max: 100)]
-        #[Assert\Regex(
-            pattern: '/^[a-zA-Z0-9 #()&.,\'\-_\+~\/\*]*$/',
-            message: 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.',
-        )]
+        #[Assert\Regex(pattern: self::ADDRESS_PATTERN, message: self::ADDRESS_PATTERN_MESSAGE)]
         private ?string $addressLine3,
 
         #[Assert\Length(max: 100)]
-        #[Assert\Regex(
-            pattern: '/^[a-zA-Z0-9 #()&.,\'\-_\+~\/\*]*$/',
-            message: 'Address field must only contain letters, numbers, spaces, hashes, parentheses, ampersands, commas, periods, single quotes, hyphens, underscores, pluses, tildes, forward slashes and asterisks.',
-        )]
+        #[Assert\Regex(pattern: self::ADDRESS_PATTERN, message: self::ADDRESS_PATTERN_MESSAGE)]
         private ?string $addressLine4,
 
         #[Assert\NotBlank]
@@ -252,21 +265,5 @@ class Address
         ]);
 
         return $array;
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            $data['addressLine1'],
-            $data['addressLine2'] ?? null,
-            $data['addressLine3'] ?? null,
-            $data['addressLine4'] ?? null,
-            $data['locality'],
-            $data['region'],
-            $data['postalCode'],
-            $data['country'],
-        );
     }
 }

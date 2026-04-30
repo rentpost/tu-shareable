@@ -7,4 +7,5 @@ namespace Rentpost\TUShareable;
 class ClientException extends \Exception
 {
 
+    // Marker exception for ShareAble client errors.
 }

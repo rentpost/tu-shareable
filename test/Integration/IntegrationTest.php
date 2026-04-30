@@ -482,20 +482,6 @@ class IntegrationTest extends TestCase
     }
 
 
-    #[Depends('testAddRenterToScreeningRequest')]
-    public function testCancelScreeningRequestForRenter(
-        ScreeningRequestRenter $screeningRequestRenter,
-    ): void
-    {
-        self::$client->cancelScreeningRequestForRenter($screeningRequestRenter->getScreeningRequestRenterId());
-
-        // We don't need to assert anything because if the request
-        // fails an exception is thrown. But we have to assert something
-        // to disable phpunit warning.
-        $this->assertTrue(true);
-    }
-
-
     #[Depends('testUpdateRenter')]
     #[Depends('testAddRenterToScreeningRequest')]
     public function testCreateExam(Renter $renter, ScreeningRequestRenter $screeningRequestRenter): Exam
@@ -547,10 +533,11 @@ class IntegrationTest extends TestCase
     #[Depends('testUpdateRenter')]
     #[Depends('testAddRenterToScreeningRequest')]
     #[Depends('testAnswerExam')]
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function testValidateRenterForScreeningRequest(
         Renter $renter,
         ScreeningRequestRenter $screeningRequestRenter,
-        Exam $exam,
+        Exam $exam, // required by PHPUnit #[Depends] chain even though unused here
     ): string
     {
         $status = self::$client->validateRenterForScreeningRequest(
@@ -568,10 +555,11 @@ class IntegrationTest extends TestCase
     #[Depends('testUpdateRenter')]
     #[Depends('testAddRenterToScreeningRequest')]
     #[Depends('testValidateRenterForScreeningRequest')]
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function testCreateReport(
         Renter $renter,
         ScreeningRequestRenter $screeningRequestRenter,
-        string $validationResult,
+        string $validationResult, // required by PHPUnit #[Depends] chain even though unused here
     ): int
     {
         self::$client->createReport($screeningRequestRenter->getScreeningRequestRenterId(), $renter);
@@ -596,7 +584,7 @@ class IntegrationTest extends TestCase
         // Normally we execute this only after receiving a notification from the service
         // But we can just sleep until they should be finished
 
-        while ((time() - $reportRequestTime) < 60) {
+        while (time() - $reportRequestTime < 60) {
             sleep(1);
         }
 
@@ -634,7 +622,7 @@ class IntegrationTest extends TestCase
         // Normally we execute this only after receiving a notification from the service
         // But we can just sleep until they should be finished
 
-        while ((time() - $reportRequestTime) < 60) {
+        while (time() - $reportRequestTime < 60) {
             sleep(1);
         }
 
@@ -658,5 +646,68 @@ class IntegrationTest extends TestCase
             // For now just assert the content is long enough rather than parsing the html
             $this->assertGreaterThan(1_024, strlen($report->getReportData()));
         }
+    }
+
+
+    /**
+     * Cancellation can't reuse the main screening request: by the time the report
+     * chain finishes, TU treats it as terminal and rejects cancel with
+     * `ScreeningRequestCannotCancel`.  And running before reports breaks
+     * testCreateExam with `IDVNotPossible`.  So this test stands up its own
+     * fresh, never-completed screening request, adds the renter to it, and
+     * cancels that one.
+     */
+    #[Depends('testUpdateLandlord')]
+    #[Depends('testUpdateProperty')]
+    #[Depends('testUpdateRenter')]
+    #[Depends('testGetReportsForRenter')]
+    public function testCancelScreeningRequestForRenter(
+        Landlord $landlord,
+        Property $property,
+        Renter $renter,
+    ): void
+    {
+        $attestationGroup = self::$client->getAttestationsForProperty(
+            $landlord->getLandlordId(),
+            $property->getPropertyId(),
+        );
+
+        foreach ($attestationGroup->getAttestations() as $attestation) {
+            $attestationGroup->addAttestationResponse($attestation->getAttestationId(), true);
+        }
+
+        $request = new ScreeningRequest(
+            landlordId: $landlord->getLandlordId(),
+            propertyId: $property->getPropertyId(),
+            initialBundleId: 1_004,
+            attestationGroup: $attestationGroup,
+        );
+
+        self::$client->createScreeningRequest($request);
+
+        $screeningRequestRenter = new ScreeningRequestRenter(
+            $landlord->getLandlordId(),
+            $renter->getRenterId(),
+            1_004,
+            RenterRole::Applicant,
+            null,
+            null,
+            null,
+            $renter->getPerson()->getFirstName(),
+            $renter->getPerson()->getLastName(),
+            $renter->getPerson()->getMiddleName(),
+        );
+
+        self::$client->addRenterToScreeningRequest(
+            $request->getScreeningRequestId(),
+            $screeningRequestRenter,
+        );
+
+        self::$client->cancelScreeningRequestForRenter(
+            $screeningRequestRenter->getScreeningRequestRenterId(),
+        );
+
+        // No assertion needed; an exception would be thrown on failure.
+        $this->assertTrue(true);
     }
 }

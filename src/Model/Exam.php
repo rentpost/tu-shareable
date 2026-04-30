@@ -15,6 +15,28 @@ class Exam
     private ?string $externalReferenceNumber = null;
 
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        $exam = new self($data['examId'], $data['result']);
+        $exam->setExternalReferenceNumber($data['setExternalReferenceNumber'] ?? null);
+
+        foreach ($data['authenticationQuestions'] as $qInfo) {
+            $question = new ExamQuestion($qInfo['questionKeyName'], $qInfo['questionDisplayName'], $qInfo['type']);
+
+            foreach ($qInfo['choices'] as $choice) {
+                $answer = new ExamQuestionAnswer($choice['choiceKeyName'], $choice['choiceDisplayName']);
+
+                $question->addChoice($answer);
+            }
+
+            $exam->addQuestion($question);
+        }
+
+        return $exam;
+    }
+
+
     public function __construct(private int $examId, private string $result) {}
 
 
@@ -54,27 +76,5 @@ class Exam
     public function setExternalReferenceNumber(?string $val): void
     {
         $this->externalReferenceNumber = $val;
-    }
-
-
-    /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): self
-    {
-        $exam = new self($data['examId'], $data['result']);
-        $exam->setExternalReferenceNumber($data['setExternalReferenceNumber'] ?? null);
-
-        foreach ($data['authenticationQuestions'] as $qInfo) {
-            $question = new ExamQuestion($qInfo['questionKeyName'], $qInfo['questionDisplayName'], $qInfo['type']);
-
-            foreach ($qInfo['choices'] as $choice) {
-                $answer = new ExamQuestionAnswer($choice['choiceKeyName'], $choice['choiceDisplayName']);
-
-                $question->addChoice($answer);
-            }
-
-            $exam->addQuestion($question);
-        }
-
-        return $exam;
     }
 }
