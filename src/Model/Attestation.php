@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace Rentpost\TUShareable\Model;
 
-use Symfony\Component\Validator\Constraints as Assert;
-
 /**
  * Class that represents a single attestation.
  */
@@ -18,39 +16,34 @@ class Attestation
     public function __construct(
         private int $attestationId,
         private int $attestationTypeId,
-
-        #[Assert\NotBlank]
-        private string $name,
-
-        #[Assert\NotBlank]
-        private string $legalText,
-
+        private ?string $name,
+        private ?string $legalText,
         private bool $affirmativeRequired,
-        private string $additionalInformation,
+        private ?string $additionalInformation,
     ) {
         $this->validate();
     }
 
 
-    public function getAttestationId(): ?int
+    public function getAttestationId(): int
     {
         return $this->attestationId;
     }
 
 
-    public function getAttestationTypeId(): ?int
+    public function getAttestationTypeId(): int
     {
         return $this->attestationTypeId;
     }
 
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
 
-    public function getLegalText(): string
+    public function getLegalText(): ?string
     {
         return $this->legalText;
     }
@@ -62,7 +55,7 @@ class Attestation
     }
 
 
-    public function getAdditionalInformation(): string
+    public function getAdditionalInformation(): ?string
     {
         return $this->additionalInformation;
     }

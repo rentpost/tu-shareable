@@ -35,7 +35,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url":  "git@github.com:rentpost/coding-standard-php.git"
+            "url":  "https://github.com/rentpost/coding-standard-php.git"
         }
     ],
     "autoload": {
