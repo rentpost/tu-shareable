@@ -4,10 +4,8 @@ declare(strict_types = 1);
 
 namespace Test\Unit\Rentpost\TUShareable\Model;
 
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Attestation;
-use Rentpost\TUShareable\ValidationException;
 
 class AttestationTest extends TestCase
 {
@@ -42,29 +40,25 @@ class AttestationTest extends TestCase
 
 
     /**
-     * @return array<array<string, string>>
+     * Per the TU API spec, name, legalText, and additionalInformation are nullable.
+     * Construction must not throw when any (or all) are null.
      */
-    public static function validationProvider(): array
+    public function testNullableStringFields(): void
     {
-        return [
-            // name missing
-            [ [1, 2, '', 'Legal Text', true, 'Additional Information'], 'name', 'This value should not be blank.' ],
-            // legal text missing
-            [ [1, 2, 'Name', '', true, 'Additional Information'], 'legalText', 'This value should not be blank.' ],
-        ];
-    }
+        $attestation = new Attestation(1, 2, null, null, false, null);
 
+        $this->assertNull($attestation->getName());
+        $this->assertNull($attestation->getLegalText());
+        $this->assertNull($attestation->getAdditionalInformation());
+        $this->assertFalse($attestation->isAffirmativeRequired());
 
-    /**
-     * @param string[] $values
-     */
-    #[DataProvider('validationProvider')]
-    public function testValidationErrors(array $values, string $field, string $errorMessage): void
-    {
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage("Object(Rentpost\TUShareable\Model\Attestation).$field");
-        $this->expectExceptionMessage($errorMessage);
-
-        new Attestation(...$values);
+        $this->assertSame([
+            'attestationId' => 1,
+            'attestationTypeId' => 2,
+            'name' => null,
+            'legalText' => null,
+            'affirmativeRequired' => false,
+            'additionalInformation' => null,
+        ], $attestation->toArray());
     }
 }

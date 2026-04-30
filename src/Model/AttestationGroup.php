@@ -55,20 +55,20 @@ class AttestationGroup
     }
 
 
-    /** @param array<string, int|array<string, mixed>> $data */
+    /** @param array<string, int|array<string, mixed>|null> $data */
     public static function fromArray(array $data): self
     {
         $attestationGroupId = $data['attestationGroupId'];
 
         $attestations = [];
-        foreach ($data['attestations'] as $attestation) {
+        foreach (($data['attestations'] ?? []) as $attestation) {
             $attestations[] = new Attestation(
                 $attestation['attestationId'],
                 $attestation['attestationTypeId'],
-                $attestation['name'],
-                $attestation['legalText'],
+                $attestation['name'] ?? null,
+                $attestation['legalText'] ?? null,
                 $attestation['affirmativeRequired'],
-                $attestation['additionalInformation'],
+                $attestation['additionalInformation'] ?? null,
             );
         }
 
@@ -83,11 +83,11 @@ class AttestationGroup
             'attestationGroupId' => $this->attestationGroupId,
         ];
 
-        foreach ($this->attestations as $attestation) {
+        foreach (($this->attestations ?? []) as $attestation) {
             $array['attestations'][] = $attestation->toArray();
         }
 
-        foreach ($this->attestationResponses as $attestationResponse) {
+        foreach (($this->attestationResponses ?? []) as $attestationResponse) {
             $array['attestationResponses'][] = $attestationResponse->toArray();
         }
 
