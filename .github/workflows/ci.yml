@@ -59,15 +59,8 @@ jobs:
         with:
           composer-options: '--no-interaction --no-progress --prefer-dist'
 
-      # --warning-severity=0 fails CI only on errors. Warnings (e.g. TU API
-      # field names that contain digits, intentional unused PHPUnit @depends
-      # params) are surfaced in the output but don't block.
       - name: Run phpcs
-        run: |
-          vendor/bin/phpcs \
-            --standard=vendor/rentpost/coding-standard-php/phpcs.xml \
-            --warning-severity=0 \
-            src/ test/
+        run: vendor/bin/phpcs --standard=vendor/rentpost/coding-standard-php/phpcs.xml src/ test/
 
   # Integration tests hit the real TransUnion ShareAble sandbox API and require
   # credentials.  They run only on manual maintainer trigger so PR validation

@@ -6,6 +6,9 @@ namespace Rentpost\TUShareable\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
+// addressLine1..4 are TU API field names; renaming would break the wire contract.
+// phpcs:disable Zend.NamingConventions.ValidVariableName.ContainsNumbers
+
 /**
  * Class that represents an address.
  */

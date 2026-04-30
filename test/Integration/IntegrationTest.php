@@ -547,10 +547,11 @@ class IntegrationTest extends TestCase
     #[Depends('testUpdateRenter')]
     #[Depends('testAddRenterToScreeningRequest')]
     #[Depends('testAnswerExam')]
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function testValidateRenterForScreeningRequest(
         Renter $renter,
         ScreeningRequestRenter $screeningRequestRenter,
-        Exam $exam,
+        Exam $exam, // required by PHPUnit #[Depends] chain even though unused here
     ): string
     {
         $status = self::$client->validateRenterForScreeningRequest(
@@ -568,10 +569,11 @@ class IntegrationTest extends TestCase
     #[Depends('testUpdateRenter')]
     #[Depends('testAddRenterToScreeningRequest')]
     #[Depends('testValidateRenterForScreeningRequest')]
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function testCreateReport(
         Renter $renter,
         ScreeningRequestRenter $screeningRequestRenter,
-        string $validationResult,
+        string $validationResult, // required by PHPUnit #[Depends] chain even though unused here
     ): int
     {
         self::$client->createReport($screeningRequestRenter->getScreeningRequestRenterId(), $renter);
