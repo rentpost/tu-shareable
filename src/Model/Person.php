@@ -19,6 +19,11 @@ class Person
     public const NAME_PATTERN_MESSAGE = 'Name must only contain letters, numbers, spaces, single quotes, commas, '
         . 'periods and hyphens.';
 
+    // TU's ReportRequestModel caps names shorter than every other model's 50
+    private const REPORT_REQUEST_FIRST_NAME_MAX_LENGTH = 15;
+    private const REPORT_REQUEST_MIDDLE_NAME_MAX_LENGTH = 15;
+    private const REPORT_REQUEST_LAST_NAME_MAX_LENGTH = 25;
+
 
     private ?int $personId = null;
 
@@ -201,6 +206,12 @@ class Person
     }
 
 
+    private static function cutName(string $name, int $maxLength): string
+    {
+        return rtrim(mb_substr($name, 0, $maxLength));
+    }
+
+
     /** @return string[] */
     public function toArray(): array
     {
@@ -231,6 +242,25 @@ class Person
 
         $array['homeAddress'] = $this->homeAddress->toArray();
         $array['acceptedTermsAndConditions'] = $this->acceptedTermsAndConditions;
+
+        return $array;
+    }
+
+
+    /**
+     * The person as a report request, with names cut to the lengths it accepts
+     *
+     * @return array<string, mixed>
+     */
+    public function toReportRequestArray(): array
+    {
+        $array = $this->toArray();
+        $array['firstName'] = self::cutName($this->firstName, self::REPORT_REQUEST_FIRST_NAME_MAX_LENGTH);
+        $array['lastName'] = self::cutName($this->lastName, self::REPORT_REQUEST_LAST_NAME_MAX_LENGTH);
+
+        if ($this->middleName) {
+            $array['middleName'] = self::cutName($this->middleName, self::REPORT_REQUEST_MIDDLE_NAME_MAX_LENGTH);
+        }
 
         return $array;
     }

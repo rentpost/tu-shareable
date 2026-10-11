@@ -120,6 +120,30 @@ class PersonTest extends TestCase
     }
 
 
+    public function testReportRequestCutsNamesToItsLengths(): void
+    {
+        $person = $this->makeObject('Anna Maria Lou Beth', str_repeat('m', 20), str_repeat('l', 30));
+
+        $reportRequest = $person->toReportRequestArray();
+
+        // Cut at 15, "Anna Maria Lou " loses its trailing space
+        $this->assertSame('Anna Maria Lou', $reportRequest['firstName']);
+        $this->assertSame(str_repeat('m', 15), $reportRequest['middleName']);
+        $this->assertSame(str_repeat('l', 25), $reportRequest['lastName']);
+
+        // The renter itself keeps the full name
+        $this->assertSame('Anna Maria Lou Beth', $person->toArray()['firstName']);
+    }
+
+
+    public function testReportRequestLeavesShortNamesAlone(): void
+    {
+        $person = $this->makeObject('First', null, 'Last');
+
+        $this->assertSame($person->toArray(), $person->toReportRequestArray());
+    }
+
+
     #[DataProvider('validationProvider')]
     public function testValidationErrors(
         string $firstName,

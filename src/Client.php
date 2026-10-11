@@ -576,7 +576,7 @@ class Client implements ClientInterface
         $this->requestJson(
             'POST',
             "Renters/ScreeningRequestRenters/$screeningRequestRenterId/Reports",
-            $renter->getPerson()->toArray(),
+            $renter->getPerson()->toReportRequestArray(),
         );
     }
 
