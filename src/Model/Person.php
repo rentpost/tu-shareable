@@ -15,6 +15,11 @@ class Person
     use Validate;
 
 
+    public const NAME_PATTERN = '/^[a-zA-Z0-9 \',.\-]*$/';
+    public const NAME_PATTERN_MESSAGE = 'Name must only contain letters, numbers, spaces, single quotes, commas, '
+        . 'periods and hyphens.';
+
+
     private ?int $personId = null;
 
 
@@ -47,14 +52,17 @@ class Person
         private Email $emailAddress,
 
         #[Assert\NotBlank]
-        #[Assert\Length(min: 2, max: 15)]
+        #[Assert\Length(min: 2, max: 50)]
+        #[Assert\Regex(pattern: self::NAME_PATTERN, message: self::NAME_PATTERN_MESSAGE)]
         private string $firstName,
 
-        #[Assert\Length(min: 1, max: 15)]
+        #[Assert\Length(min: 1, max: 50)]
+        #[Assert\Regex(pattern: self::NAME_PATTERN, message: self::NAME_PATTERN_MESSAGE)]
         private ?string $middleName,
 
         #[Assert\NotBlank]
-        #[Assert\Length(min: 2, max: 25)]
+        #[Assert\Length(min: 2, max: 50)]
+        #[Assert\Regex(pattern: self::NAME_PATTERN, message: self::NAME_PATTERN_MESSAGE)]
         private string $lastName,
 
         #[Assert\NotBlank]

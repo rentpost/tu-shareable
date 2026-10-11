@@ -15,6 +15,12 @@ class Landlord
     use Validate;
 
 
+    private const BUSINESS_NAME_PATTERN = '/^(?=.*[a-zA-Z])[a-zA-Z0-9 ,.@&!#\'~_\-+()\\\\\/]*$/';
+    private const BUSINESS_NAME_PATTERN_MESSAGE = 'Business name must contain a letter and only letters, numbers, '
+        . 'spaces, commas, periods, at signs, ampersands, exclamation marks, pound signs, single quotes, tildes, '
+        . 'underscores, hyphens, pluses, parentheses and slashes.';
+
+
     private ?int $landlordId = null;
 
 
@@ -43,16 +49,19 @@ class Landlord
 
         #[Assert\NotBlank]
         #[Assert\Length(min: 2, max: 50)]
+        #[Assert\Regex(pattern: Person::NAME_PATTERN, message: Person::NAME_PATTERN_MESSAGE)]
         private string $firstName,
 
         #[Assert\NotBlank]
         #[Assert\Length(min: 2, max: 50)]
+        #[Assert\Regex(pattern: Person::NAME_PATTERN, message: Person::NAME_PATTERN_MESSAGE)]
         private string $lastName,
 
         #[Assert\NotBlank]
         private Phone $phone,
 
         #[Assert\Length(min: 2, max: 50)]
+        #[Assert\Regex(pattern: self::BUSINESS_NAME_PATTERN, message: self::BUSINESS_NAME_PATTERN_MESSAGE)]
         private ?string $businessName,
 
         #[Assert\NotBlank]

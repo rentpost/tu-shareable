@@ -57,7 +57,26 @@ class PersonTest extends TestCase
             [ 'First', 'Middle', '', true, 'This value should not be blank.' ],
             // Not accepted terms
             [ 'First', 'Middle', 'Last', false, 'Terms and conditions need to be accepted.' ],
+            // First name too long
+            [ str_repeat('a', 51), 'Middle', 'Last', true, 'It should have 50 characters or less.' ],
+            // Middle name too long
+            [ 'First', str_repeat('a', 51), 'Last', true, 'It should have 50 characters or less.' ],
+            // Last name too long
+            [ 'First', 'Middle', str_repeat('a', 51), true, 'It should have 50 characters or less.' ],
+            // Invalid characters
+            [ 'First!', 'Middle', 'Last', true, Person::NAME_PATTERN_MESSAGE ],
+            [ 'First', 'Middle"', 'Last', true, Person::NAME_PATTERN_MESSAGE ],
+            [ 'First', 'Middle', 'L@st', true, Person::NAME_PATTERN_MESSAGE ],
         ];
+    }
+
+
+    public function testFiftyCharacterNamesWithAllowedPunctuationAreValid(): void
+    {
+        $firstName = str_pad("Mary-Jo O'Neil, Jr.", 50, 'a');
+        $person = $this->makeObject($firstName, str_repeat('b', 50), str_repeat('c', 50));
+
+        $this->assertSame($firstName, $person->getFirstName());
     }
 
 

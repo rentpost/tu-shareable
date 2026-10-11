@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Rentpost\TUShareable\Model\Address;
 use Rentpost\TUShareable\Model\Email;
 use Rentpost\TUShareable\Model\Landlord;
+use Rentpost\TUShareable\Model\Person;
 use Rentpost\TUShareable\Model\Phone;
 use Rentpost\TUShareable\ValidationException;
 
@@ -53,7 +54,25 @@ class LandlordTest extends TestCase
             [ 'First', '', 'Business', true, 'This value should not be blank.' ],
             // Not accepted terms
             [ 'First', 'Last', 'Business', false, 'Terms and conditions need to be accepted.' ],
+            // Too long
+            [ str_repeat('a', 51), 'Last', 'Business', true, 'It should have 50 characters or less.' ],
+            [ 'First', str_repeat('a', 51), 'Business', true, 'It should have 50 characters or less.' ],
+            [ 'First', 'Last', str_repeat('a', 51), true, 'It should have 50 characters or less.' ],
+            // Invalid characters
+            [ 'First!', 'Last', 'Business', true, Person::NAME_PATTERN_MESSAGE ],
+            [ 'First', 'L@st', 'Business', true, Person::NAME_PATTERN_MESSAGE ],
+            [ 'First', 'Last', 'Business $', true, 'Business name must contain a letter' ],
+            [ 'First', 'Last', '123 456', true, 'Business name must contain a letter' ],
         ];
+    }
+
+
+    public function testBusinessNameWithAllowedPunctuationIsValid(): void
+    {
+        $businessName = "Smith & Sons (R/E) #1, L.L.C. @ ~_+!'\\";
+        $landlord = $this->makeObject('First', 'Last', $businessName);
+
+        $this->assertSame($businessName, $landlord->getBusinessName());
     }
 
 
